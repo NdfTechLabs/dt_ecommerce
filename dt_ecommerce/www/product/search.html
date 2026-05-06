@@ -1,0 +1,27 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Product Search") }}{% endblock %}
+
+{% block page_content %}
+
+{% from "webshop/templates/includes/macros.html" import item_card %}
+
+<h3>
+    {% if q %}
+        {{ _("Search results for") }}: "{{ q }}"
+    {% else %}
+        {{ _("Search Results") }}
+    {% endif %}
+</h3>
+
+<div class="row">
+    {% if items and items|length %}
+        {% for item in items %}
+            {{ item_card(item, is_full_width=True, align="Center") }}
+        {% endfor %}
+    {% else %}
+        <p>{{ _("No results found") }}</p>
+    {% endif %}
+</div>
+
+{% endblock %}

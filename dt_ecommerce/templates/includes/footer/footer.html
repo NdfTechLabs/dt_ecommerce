@@ -1,0 +1,87 @@
+<footer class="dt-footer">
+  <div class="dt-footer-container">
+
+    <!-- Brand -->
+    <div class="footer-col dt-footer-logo">
+      {% if footer_logo %}
+        <img src="{{ footer_logo }}" />
+      {% else %}
+        <h3 class="footer-logo">NDF Tech Labs</h3>
+      {% endif %}
+
+      <p class="footer-text">
+        Smart ERP and eCommerce solutions for modern businesses.
+      </p>
+    </div>
+
+    <!-- Dynamic Footer Links -->
+    {% if footer_items %}
+
+      {% set grouped = {} %}
+
+      {# Build groups #}
+      {% for item in footer_items %}
+        {% if not item.parent_label %}
+          {% set _ = grouped.update({item.label: []}) %}
+        {% endif %}
+      {% endfor %}
+
+      {# Assign children #}
+      {% for item in footer_items %}
+        {% if item.parent_label and grouped[item.parent_label] is defined %}
+          {% set _ = grouped[item.parent_label].append(item) %}
+        {% endif %}
+      {% endfor %}
+
+      {# Render groups #}
+      {% for group, children in grouped.items() %}
+        <div class="footer-col">
+          <h4 class="dt-group-label">{{ group }}</h4>
+
+          <ul>
+            {% for child in children %}
+              <li>
+                <a href="{{ child.url or '#' }}">
+                  {{ child.label }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+
+    {% endif %}
+
+    <!-- Contact (dynamic) -->
+    <div class="footer-col">
+      <h4 class="dt-group-label">Contact</h4>
+
+      {% if footer_address %}
+        <p>{{ footer_address }}</p>
+      {% endif %}
+
+      {% if footer_email %}
+        <p>Email: {{ footer_email }}</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="dt-footer-bottom">
+
+    <span>
+      © {{ frappe.utils.now_datetime().year }}
+      {{ copyright or "NDF Tech Labs" }}
+    </span>
+
+    <span class="footer-right">
+      {% if footer_powered %}
+        {{ footer_powered }}
+      {% else %}
+        {% include "templates/includes/footer/footer_powered.html" %}
+      {% endif %}
+    </span>
+
+  </div>
+</footer>
