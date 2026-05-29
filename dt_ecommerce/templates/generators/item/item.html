@@ -10,7 +10,14 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="product-container item-main">
+{# Seed window.dalali_* so dalali.js can read case_size without an extra API call #}
+{% if dalali_item_code %}
+<script>
+window.dalali_item_code = {{ dalali_item_code | tojson }};
+window.dalali_case_size = {{ dalali_case_size | default(12) | int }};
+</script>
+{% endif %}
+<div class="product-container item-main dalali-mode">
 	{% from "webshop/templates/includes/macros.html" import product_image %}
 	<div class="item-content">
 		<div class="product-page-content" itemscope itemtype="http://schema.org/Product">
@@ -23,52 +30,28 @@
 	</div>
 </div>
 
-<!-- Additional Info/Reviews, Recommendations -->
-<div class="d-flex flex-column flex-lg-row">
-	{% set show_recommended_items = recommended_items and shopping_cart.cart_settings.enable_recommendations %}
-	{% set info_col = 'col-12 col-lg-9' if show_recommended_items else 'col-12' %}
-
-	{% set padding_top = 'pt-0' if (show_tabs and tabs) else '' %}
-
-	<div class="product-container mt-4 {{ padding_top }} {{ info_col }}">
-		<div class="item-content {{ 'mt-minus-2' if (show_tabs and tabs) else '' }}">
-			<div class="product-page-content" itemscope itemtype="http://schema.org/Product">
-				<!-- Product Specifications Table Section -->
-				{% if show_tabs and tabs %}
-					<div class="category-tabs">
-						<!-- tabs -->
-							{{ web_block("Section with Tabs", values=tabs, add_container=0,
-								add_top_padding=0, add_bottom_padding=0)
-							}}
-					</div>
-				{% elif website_specifications %}
-					{% include "templates/generators/item/item_specifications.html"%}
-				{% endif %}
-
-				<!-- Advanced Custom Website Content -->
-				{{ doc.website_content or '' }}
-
-				<!-- Reviews and Comments -->
-				{% if shopping_cart.cart_settings.enable_reviews and not doc.has_variants %}
-					{% include "templates/generators/item/item_reviews.html"%}
-				{% endif %}
-			</div>
+<!-- Additional Info / Reviews -->
+<div class="product-container mt-4 {{ 'pt-0' if (show_tabs and tabs) else '' }}">
+	<div class="item-content {{ 'mt-minus-2' if (show_tabs and tabs) else '' }}">
+		<div class="product-page-content" itemscope itemtype="http://schema.org/Product">
+			{% if show_tabs and tabs %}
+				<div class="category-tabs">
+					{{ web_block("Section with Tabs", values=tabs, add_container=0,
+						add_top_padding=0, add_bottom_padding=0) }}
+				</div>
+			{% elif website_specifications %}
+				{% include "templates/generators/item/item_specifications.html" %}
+			{% endif %}
+			{{ doc.website_content or '' }}
+			{% if shopping_cart.cart_settings.enable_reviews and not doc.has_variants %}
+				{% include "templates/generators/item/item_reviews.html" %}
+			{% endif %}
 		</div>
 	</div>
-
-	<!-- Recommended Items -->
-	{% if show_recommended_items %}
-		<div class="mt-4 col-12 col-lg-3 recommended-item-section">
-			<span class="recommendation-header">{{ _("Recommended") }}</span>
-			<div class="product-container mt-2 recommendation-container">
-				{% for item in recommended_items %}
-					{{ recommended_item_row(item) }}
-				{% endfor %}
-			</div>
-		</div>
-	{% endif %}
-
 </div>
+
+<!-- Recommended Items — populated by dalali.js initPDPRecommended() -->
+<section id="dalali-pdp-recommended" class="dalali-pdp-recommended-section"></section>
 {% endblock %}
 
 {% block base_scripts %}

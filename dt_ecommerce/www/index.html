@@ -1,0 +1,413 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Dalali — Wholesale Liquor Distribution") }}{% endblock %}
+
+{% block page_content %}
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO + FILTER FORM WRAPPER
+     Single <form> spans the hero and the filter strip below
+     so all inputs (search + selects) submit together.
+═══════════════════════════════════════════════════════════ -->
+<form
+	action="/catalog"
+	method="GET"
+	class="dalali-matrix-form"
+	autocomplete="off"
+>
+
+	<!-- ── Hero Section (dark background image) ── -->
+	<section class="dalali-hero-section">
+		<div class="dalali-hero-overlay"></div>
+
+		<div class="dalali-hero-container">
+
+			<h1 class="dalali-hero-title">
+				{{ _("Unbeatable Wholesale Pricing for Hospitality & Retail") }}
+			</h1>
+			<p class="dalali-hero-sub">
+				{{ _("Premium wine, spirits & beer — by the bottle or case. Trade accounts welcome.") }}
+			</p>
+
+			<!-- Search Bar -->
+			<div class="dalali-search-row">
+				<input
+					class="dalali-search-input"
+					type="text"
+					name="search"
+					aria-label="{{ _('Search products') }}"
+					placeholder="{{ _('Search by brand, distillery, importer, or SKU…') }}"
+				/>
+				<button type="submit" class="dalali-btn-search" aria-label="{{ _('Search') }}">
+					{{ _("Search") }}
+				</button>
+			</div>
+
+		</div><!-- /.dalali-hero-container -->
+	</section><!-- /.dalali-hero-section -->
+
+	<!-- ── Filter Strip (white bar, below the hero image) ── -->
+	<div class="dalali-filter-strip">
+		<div class="dalali-filter-strip-inner">
+
+			<span class="dalali-filter-label">{{ _("Filter by:") }}</span>
+
+			<!-- Type / Item Group -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-item-group">{{ _("Type") }}</label>
+				<select id="fs-item-group" class="dalali-select" name="item_group" aria-label="{{ _('Filter by type') }}">
+					<option value="">{{ _("All Types") }}</option>
+					{% for cat in categories %}
+					<option value="{{ cat.name | e }}">{{ cat.item_group_name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Brand -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-brand">{{ _("Brand") }}</label>
+				<select id="fs-brand" class="dalali-select" name="brand" aria-label="{{ _('Filter by brand') }}">
+					<option value="">{{ _("All Brands") }}</option>
+					{% for brand in brands %}
+					<option value="{{ brand.name | e }}">{{ brand.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Region -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-region">{{ _("Region") }}</label>
+				<select id="fs-region" class="dalali-select" name="custom_region" aria-label="{{ _('Filter by region') }}">
+					<option value="">{{ _("All Regions") }}</option>
+					{% for region in regions %}
+					<option value="{{ region.name | e }}">{{ region.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Varietal / Style -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-varietal">{{ _("Varietal / Style") }}</label>
+				<select id="fs-varietal" class="dalali-select" name="custom_varietal" aria-label="{{ _('Filter by varietal') }}">
+					<option value="">{{ _("All Varietals") }}</option>
+					{% for varietal in varietals %}
+					<option value="{{ varietal.name | e }}">{{ varietal.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Browse CTA -->
+			<button type="submit" class="dalali-btn-browse">
+				{{ _("Browse Inventory") }}
+			</button>
+
+		</div><!-- /.dalali-filter-strip-inner -->
+	</div><!-- /.dalali-filter-strip -->
+
+</form><!-- /.dalali-matrix-form -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     CATEGORY GRID SECTION
+═══════════════════════════════════════════════════════════ -->
+{% if category_grid %}
+<section class="dalali-category-section" id="dalali-category-grid">
+	<div class="container">
+
+		<!-- Section Header -->
+		<div class="dalali-section-header">
+			<h2 class="dalali-section-title">{{ _("Shop by Category") }}</h2>
+			<a href="/catalog" class="dalali-section-link">
+				{{ _("View all") }}
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round"
+					stroke-linejoin="round" aria-hidden="true">
+					<path d="M5 12h14M12 5l7 7-7 7"/>
+				</svg>
+			</a>
+		</div>
+
+		<!-- 4-Column Card Grid -->
+		<div class="dalali-category-grid">
+			{% for cat in category_grid %}
+			<a href="{{ cat.url | e }}" class="dalali-category-card">
+
+				{% if cat.image_url %}
+				<img
+					src="{{ cat.image_url | e }}"
+					alt="{{ cat.name | e }}"
+					class="dalali-category-img"
+					loading="lazy"
+				/>
+				{% else %}
+				<div class="dalali-category-img-placeholder" aria-hidden="true">🍷</div>
+				{% endif %}
+
+				<span class="dalali-category-name">{{ cat.item_group_name or cat.name }}</span>
+
+			</a>
+			{% endfor %}
+		</div><!-- /.dalali-category-grid -->
+
+	</div><!-- /.container -->
+</section><!-- /.dalali-category-section -->
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════
+     PROMOTIONAL BANNER / ANNOUNCEMENT STRIP
+═══════════════════════════════════════════════════════════ -->
+<section class="dalali-announcement-section" id="dalali-announcement">
+	<div class="container">
+
+		<!-- Dynamic Promo Banners (from active Pricing Rule campaigns) -->
+		{% if promo_banners %}
+		<div class="dalali-promo-banners">
+			{% for banner in promo_banners %}
+			<div class="dalali-promo-card">
+				<div class="dalali-promo-card-left">
+					{% if banner.badge %}
+					<span class="dalali-promo-badge">{{ banner.badge | e }}</span>
+					{% endif %}
+					<h3 class="dalali-promo-card-title">{{ banner.title | e }}</h3>
+					{% if banner.valid_upto %}
+					<p class="dalali-promo-expiry">
+						{{ _("Valid until") }} {{ banner.valid_upto }}
+					</p>
+					{% endif %}
+				</div>
+				<div class="dalali-promo-card-right">
+					<a href="/catalog" class="dalali-promo-card-cta">
+						{{ _("Shop Now") }}
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+							stroke-linejoin="round" aria-hidden="true">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+				</div>
+			</div><!-- /.dalali-promo-card -->
+			{% endfor %}
+		</div><!-- /.dalali-promo-banners -->
+		{% endif %}
+
+		<!-- Value Proposition Strip (always shown) -->
+		<div class="dalali-value-strip">
+
+			<div class="dalali-value-item">
+				<span class="dalali-value-icon" aria-hidden="true">📦</span>
+				<div class="dalali-value-body">
+					<strong class="dalali-value-title">{{ _("Wholesale Pricing") }}</strong>
+					<span class="dalali-value-desc">{{ _("Competitive case rates from 5+ cases") }}</span>
+				</div>
+			</div>
+
+			<div class="dalali-value-divider" aria-hidden="true"></div>
+
+			<div class="dalali-value-item">
+				<span class="dalali-value-icon" aria-hidden="true">🚚</span>
+				<div class="dalali-value-body">
+					<strong class="dalali-value-title">{{ _("Fast Delivery") }}</strong>
+					<span class="dalali-value-desc">{{ _("Nairobi same-day on orders above 10 cases") }}</span>
+				</div>
+			</div>
+
+			<div class="dalali-value-divider" aria-hidden="true"></div>
+
+			<div class="dalali-value-item">
+				<span class="dalali-value-icon" aria-hidden="true">🏷️</span>
+				<div class="dalali-value-body">
+					<strong class="dalali-value-title">{{ _("Volume Discounts") }}</strong>
+					<span class="dalali-value-desc">{{ _("Tiered pricing unlocks automatically at checkout") }}</span>
+				</div>
+			</div>
+
+			<div class="dalali-value-divider" aria-hidden="true"></div>
+
+			<div class="dalali-value-item">
+				<span class="dalali-value-icon" aria-hidden="true">💳</span>
+				<div class="dalali-value-body">
+					<strong class="dalali-value-title">{{ _("Trade Accounts") }}</strong>
+					<span class="dalali-value-desc">{{ _("30-day credit terms for verified businesses") }}</span>
+				</div>
+			</div>
+
+		</div><!-- /.dalali-value-strip -->
+
+	</div><!-- /.container -->
+</section><!-- /.dalali-announcement-section -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     TIERED WHOLESALE PRICING PRODUCT CARDS
+═══════════════════════════════════════════════════════════ -->
+{% if featured_products %}
+<section class="dalali-products-section" id="dalali-products">
+	<div class="container">
+
+		<!-- Section Header -->
+		<div class="dalali-section-header">
+			<h2 class="dalali-section-title">{{ _("Featured Wholesale Products") }}</h2>
+			<a href="/catalog" class="dalali-section-link">
+				{{ _("View all") }}
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round"
+					stroke-linejoin="round" aria-hidden="true">
+					<path d="M5 12h14M12 5l7 7-7 7"/>
+				</svg>
+			</a>
+		</div>
+
+		<!-- 4-Column Product Card Grid -->
+		<div class="dalali-product-grid">
+			{% for item in featured_products %}
+			<div class="dalali-product-card"
+				data-item-code="{{ item.item_code | e }}"
+				data-case-size="{{ item.case_size }}"
+				data-price="{{ item.price }}"
+				data-currency="{{ item.currency | e }}">
+
+				<!-- Product Image -->
+				<a href="{{ item.url | e }}" class="dalali-product-img-wrap" tabindex="-1" aria-hidden="true">
+					{% if item.website_image %}
+					<img
+						src="{{ item.website_image | e }}"
+						alt="{{ item.web_item_name | e }}"
+						class="dalali-product-img"
+						loading="lazy"
+					/>
+					{% else %}
+					<div class="dalali-product-img-placeholder">🍷</div>
+					{% endif %}
+				</a>
+
+				<!-- Card Body -->
+				<div class="dalali-product-body">
+					<span class="dalali-product-category">{{ item.item_group | e }}</span>
+
+					<a href="{{ item.url | e }}" class="dalali-product-name">
+						{{ item.web_item_name | e }}
+					</a>
+
+					<!-- Pricing block — bottle price server-side, case price filled by JS -->
+					<div class="dalali-product-pricing">
+						{% if item.price %}
+						<div class="dalali-bottle-price">
+							{{ item.currency }} {{ "{:,.0f}".format(item.price) }}
+							<span class="dalali-price-unit">/ {{ _("btl") }}</span>
+						</div>
+						<div class="dalali-case-price">
+							<!-- JS: case of N price -->
+						</div>
+						{% else %}
+						<div class="dalali-price-na">{{ _("Price on request") }}</div>
+						{% endif %}
+					</div>
+
+					<!-- Tier badge — filled by JS after bulk tier fetch -->
+					<div class="dalali-tier-badge">
+						<!-- JS: best discount badge -->
+					</div>
+				</div><!-- /.dalali-product-body -->
+
+				<!-- CTA Footer -->
+				<div class="dalali-product-footer">
+					<a href="{{ item.url | e }}" class="dalali-product-cta">
+						{{ _("View & Order") }}
+					</a>
+				</div>
+
+			</div><!-- /.dalali-product-card -->
+			{% endfor %}
+		</div><!-- /.dalali-product-grid -->
+
+	</div><!-- /.container -->
+</section><!-- /.dalali-products-section -->
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════
+     CURATED WHOLESALE BUNDLES
+═══════════════════════════════════════════════════════════ -->
+{% if wholesale_bundles %}
+<section class="dalali-bundles-section" id="dalali-bundles">
+	<div class="container">
+
+		<!-- Section Header -->
+		<div class="dalali-section-header dalali-bundles-header">
+			<h2 class="dalali-section-title dalali-bundles-title">{{ _("Curated Wholesale Bundles") }}</h2>
+			<a href="/catalog" class="dalali-section-link dalali-bundles-link">
+				{{ _("View all") }}
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round"
+					stroke-linejoin="round" aria-hidden="true">
+					<path d="M5 12h14M12 5l7 7-7 7"/>
+				</svg>
+			</a>
+		</div>
+
+		<!-- Bundle Card Grid -->
+		<div class="dalali-bundle-grid">
+			{% for bundle in wholesale_bundles %}
+			<article class="dalali-bundle-card">
+
+				<!-- Image -->
+				<a href="{{ bundle.url | e }}" class="dalali-bundle-img-wrap" tabindex="-1" aria-hidden="true">
+					{% if bundle.image %}
+					<img
+						src="{{ bundle.image | e }}"
+						alt="{{ bundle.title | e }}"
+						class="dalali-bundle-img"
+						loading="lazy"
+					/>
+					{% else %}
+					<div class="dalali-bundle-img-placeholder" aria-hidden="true">🎁</div>
+					{% endif %}
+					<div class="dalali-bundle-img-overlay"></div>
+				</a>
+
+				<!-- Card Body -->
+				<div class="dalali-bundle-body">
+
+					{% if bundle.item_count %}
+					<span class="dalali-bundle-meta">
+						{{ bundle.item_count }} {{ _("SKU") }}{{ "s" if bundle.item_count != 1 else "" }}
+					</span>
+					{% endif %}
+
+					<a href="{{ bundle.url | e }}" class="dalali-bundle-title">
+						{{ bundle.title | e }}
+					</a>
+
+					{% if bundle.description %}
+					<p class="dalali-bundle-desc">{{ bundle.description | e }}</p>
+					{% endif %}
+
+					{% if bundle.price %}
+					<div class="dalali-bundle-price">
+						<span class="dalali-bundle-price-label">{{ _("From") }}</span>
+						<span class="dalali-bundle-price-amount">
+							{{ bundle.currency }} {{ "{:,.0f}".format(bundle.price) }}
+						</span>
+					</div>
+					{% endif %}
+
+				</div><!-- /.dalali-bundle-body -->
+
+				<!-- CTA Footer -->
+				<div class="dalali-bundle-footer">
+					<a href="{{ bundle.url | e }}" class="dalali-bundle-cta">
+						{{ _("View Bundle") }}
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round"
+							stroke-linejoin="round" aria-hidden="true">
+							<path d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</a>
+				</div>
+
+			</article><!-- /.dalali-bundle-card -->
+			{% endfor %}
+		</div><!-- /.dalali-bundle-grid -->
+
+	</div><!-- /.container -->
+</section><!-- /.dalali-bundles-section -->
+{% endif %}
+
+{% endblock %}

@@ -38,16 +38,43 @@ app_license = "agpl-3.0"
 # ]
 
 # include js, css files in header of web template
-# web_include_css = "/assets/dt_ecommerce/css/dt_ecommerce.css"
-# web_include_js = "/assets/dt_ecommerce/js/dt_ecommerce.js"
+web_include_css = "/assets/dt_ecommerce/css/dt_ecommerce.css"
+web_include_js = "/assets/dt_ecommerce/js/dt_ecommerce.js"
+required_apps = ["webshop"]
+
+# v=1.2 — bump this whenever CSS/JS changes to force all browsers to re-fetch
+# (Werkzeug ignores query strings for static files; browsers treat each ?v= as a new URL)
+_V = "?v=1.3"
+
 web_include_css = [
-    "/assets/dt_ecommerce/css/base.css",
-    "/assets/dt_ecommerce/css/theme_glass.css",
+    "/assets/dt_ecommerce/css/base.css"        + _V,
+    "/assets/dt_ecommerce/css/theme_glass.css" + _V,
+    "/assets/dt_ecommerce/css/theme_dalali.css" + _V,
 ]
 
 web_include_js = [
-    "/assets/dt_ecommerce/js/theme.js",
+    "/assets/dt_ecommerce/js/theme.js"  + _V,
+    "/assets/dt_ecommerce/js/dalali.js" + _V,
 ]
+
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [["dt", "=", "Item"], ["fieldname", "in", [
+            "custom_dalali_section", "custom_liquor_category", "custom_wine_varietal",
+            "custom_origin_country", "custom_region", "custom_dalali_col",
+            "custom_vintage_year", "custom_alcohol_content", "custom_case_size", "custom_importer",
+        ]]],
+    }
+]
+
+# Inject wholesale bootstrap data (case_size, item_code) into item page context
+update_website_context = ["dt_ecommerce.utils.extend_dalali_context"]
+
+# Expose dalali_item_code / dalali_case_size as window.* vars via an inline script
+jinja = {
+    "methods": ["dt_ecommerce.utils.dalali_bootstrap_script"],
+}
 
 
 # include custom scss in every website theme (without file extension ".scss")
@@ -150,13 +177,13 @@ web_include_js = [
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    # Block publishing internal-operation items to the webshop.
+    # Fires on every Website Item save/update.
+    "Website Item": {
+        "validate": "dt_ecommerce.catalog_guard.block_internal_publish",
+    },
+}
 
 # Scheduled Tasks
 # ---------------
