@@ -1,6 +1,6 @@
 # Dalali Wine Wholesaler — dt_ecommerce Implementation Doc
 
-> **App:** `dt_ecommerce` | **Frappe version:** v17 | **Last updated:** 2026-05-29 (rev 15)
+> **App:** `dt_ecommerce` | **Frappe version:** v17 | **Last updated:** 2026-06-06 (rev 22)
 >
 > This document is the living reference for everything built in `dt_ecommerce` as the Dalali B2B Wholesale Liquor webshop. Update it every time a new feature, fix, or structural change is made.
 
@@ -53,6 +53,11 @@ Dalali is a high-converting B2B/Wholesale Liquor Distribution portal layered on 
 | Wholesale custom fields on Item master | ✅ Done | `fixtures/custom_field.json` |
 | Seed data (items, prices, bundles, campaigns) | ✅ Done | `seed.py`, `seed_campaigns.py` |
 | Catalog guard (block internal-item publishing) | ✅ Done | `catalog_guard.py` + `hooks.py doc_events` |
+| Horizontal filter strip on /all-products | ✅ Done | `dalali.js → convertFiltersToHorizontal()` + `api/wholesale.get_filter_options` |
+| Navbar context-aware menu (login/logout/desk) | ✅ Done | `templates/includes/navbar/navbar.html` + `theme.js` |
+| Cart/wishlist icons visible for guests | ✅ Done | `navbar.html` (guard removed) |
+| Guest add-to-cart redirect to login | ✅ Done | `dalali.js → pdpCartAction()`, `initCatalogCart()` |
+| Cart error message formatting | ✅ Done | `dalali.js → initCartErrorFormatter()` |
 
 ---
 
@@ -114,7 +119,7 @@ apps/dt_ecommerce/
     │   │   └── item.html              OVERRIDE — shadows webshop PDP template
     │   └── includes/
     │       ├── footer/footer.html     PRE-EXISTING
-    │       └── navbar/navbar.html     PRE-EXISTING
+    │       └── navbar/navbar.html     MODIFIED — context-aware menu, always-visible icons
     │
     └── www/
         ├── index.py                   MODIFIED — homepage context controller
@@ -135,7 +140,7 @@ required_apps = ["webshop"]
 
 # v=1.2 — bump _V whenever CSS/JS changes to force browsers to re-fetch
 # (Werkzeug ignores query strings for static files; browsers treat each ?v= as a new URL)
-_V = "?v=1.2"
+_V = "?v=2.2"
 
 web_include_css = [
     "/assets/dt_ecommerce/css/base.css"         + _V,
@@ -285,6 +290,23 @@ Returns published `Website Item` records similar to `item_code`, ordered by rele
 Candidate items must match at least one condition (OR filter). Current item is always excluded.
 
 Returned fields per item: `item_code`, `web_item_name`, `website_image`, `item_group`, `route`, `brand`, `custom_case_size`, `price`, `currency` — plus computed: `url` (= `/{route}`), `case_size`, `case_price` (= price × case_size).
+
+---
+
+### `get_filter_options() → dict`
+
+**Path:** `dt_ecommerce.api.wholesale.get_filter_options`
+
+Returns distinct `item_group` and `brand` values from all published `Website Item` records. Used to populate the horizontal filter strip on `/all-products` independently of Webshop Settings filter configuration (which can have `enable_field_filters = False`).
+
+```json
+{
+  "item_group": ["Beer & Cider", "Red Wine", "Whisky & Scotch", ...],
+  "brand":      ["Absolut", "Jameson", "Moët & Chandon", ...]
+}
+```
+
+Both lists are sorted ascending, nulls excluded. No authentication required.
 
 ---
 
@@ -646,7 +668,7 @@ section#dalali-pdp-recommended               (JS-populated recommended grid)
 
 ## Frontend JavaScript (`public/js/`)
 
-### `dalali.js` — Wholesale UI (870 lines)
+### `dalali.js` — Wholesale UI (~980 lines)
 
 All logic runs inside `frappe.ready()`. Never modifies webshop cart/session state directly.
 
@@ -685,9 +707,11 @@ frappe.ready()
 │       ├── initBrandSearch()         ← live search within brand list
 │       ├── initTierInfoButtons()     ← .dalali-cat-price-why click → openTierModal
 │       ├── initWishlistButtons()     ← heart toggle + fill attribute
-│       └── initCatalogCart()         ← .dalali-cat-btn-add → update_cart
-└── if #dalali-products exists
-    └── initProductCards()            ← bulk tier fetch for homepage product cards
+│       └── initCatalogCart()         ← .dalali-cat-btn-add → update_cart (guest guard)
+├── if #dalali-products exists
+│   └── initProductCards()            ← bulk tier fetch for homepage product cards
+└── if pathname === "/cart"
+    └── initCartErrorFormatter()      ← overrides place_order / request_quotation
 ```
 
 #### Component detail
@@ -709,10 +733,11 @@ frappe.ready()
 - CTA buttons call `pdpCartAction(itemCode, currentQty, buyNow, btn)`.
 
 **`pdpCartAction(itemCode, qty, buyNow, btn)`**
+- **Guest guard:** if `frappe.session.user === "Guest"`, saves `last_visited` to `localStorage` and redirects immediately to `/login?redirect-to=<current path>` — no API call is made.
 - Calls `webshop.webshop.shopping_cart.cart.update_cart` with `{item_code: itemCode, qty}`.
 - **Add to Cart path:** shows ✓ "Added!" success state for 1.8 s, then restores original button HTML.
 - **Buy Now path:** on success, redirects to `/cart`.
-- **Error path:** redirects to `/login?redirect-to=<current path>` (handles unauthenticated users).
+- **Error path:** redirects to `/login?redirect-to=<current path>`.
 
 **`initPDPRecommended(itemCode)`**
 - Calls `dt_ecommerce.api.wholesale.get_recommended_items`.
@@ -754,10 +779,13 @@ frappe.ready()
 - Inserts after `#dalali-hero` (or before `.item-group-content` if no hero).
 - JS-injected version uses `section` element + `.dalali-section-header` to match server-side structure.
 
-**`convertFiltersToHorizontal()`**
-- Clones `select` inputs from the webshop sidebar `.filters-section` into a new `#dalali-filter-bar` sticky bar above the product listing.
-- Each cloned select mirrors changes back to the original hidden sidebar select and dispatches a `change` event so webshop's filter logic still fires.
-- Hides the original sidebar column, expands product column from `col-md-9` to `col-md-12`.
+**`convertFiltersToHorizontal()`** *(rewritten — now API-driven)*
+- Hides the webshop sidebar column immediately; expands product column to `col-md-12`.
+- Calls `dt_ecommerce.api.wholesale.get_filter_options` to fetch distinct `item_group` and `brand` values independently of Webshop Settings (avoids the `enable_field_filters = False` issue).
+- Builds `#dalali-filter-bar` (`.dalali-filter-strip`) with Type and Brand `<select>` elements above the product grid.
+- On `<select>` change, navigates to `/all-products?field_filters=<JSON>` — format that webshop's native `ProductView` reads (`field_filters: {"fieldname": ["value"]}`).
+- Reads the current URL's `field_filters` param to pre-select active values on page load.
+- Appends `.dalali-ap-clear` "Clear All" link (`href="/all-products"`) when filters are active.
 
 **`initPriceRangeSlider()`**
 - Reads `#dalali-range-min` / `#dalali-range-max` slider values and syncs them to `#dalali-price-min` / `#dalali-price-max` number inputs.
@@ -779,12 +807,28 @@ frappe.ready()
 
 **`initCatalogCart()`**
 - Listens for `click` on `.dalali-cat-btn-add` buttons.
+- **Guest guard:** if `frappe.session.user === "Guest"`, saves `last_visited` to `localStorage` and redirects to `/login?redirect-to=<current path>` — no API call is made.
 - Reads `data-item-code`; calls `webshop.webshop.shopping_cart.cart.update_cart` with `{item_code, qty: 1}`.
-- Shows brief `.dalali-cart-feedback` tooltip on success.
+- Shows brief cart icon success state (✓ for 1.6 s) on success.
+
+**`convertFiltersToHorizontal()`**
+- Calls `dt_ecommerce.api.wholesale.get_filter_options` to get distinct `item_group` and `brand` values — independent of Webshop Settings (works even when `enable_field_filters = False`).
+- Hides the webshop sidebar column, expands product column to `col-md-12`.
+- Builds `#dalali-filter-bar` (`.dalali-filter-strip`) above the product listing with Type and Brand `<select>` dropdowns.
+- On `<select>` change, navigates to `/all-products?field_filters=<JSON>` which webshop's `ProductView` reads natively.
+- Appends a "Clear All" link (`/all-products`) when any filter is active.
+- Reads the current URL's `field_filters` param to pre-select active filters on page load.
+
+**`initCartErrorFormatter()`**
+- Called only on `/cart` page, inside `frappe.ready()`.
+- Overrides `webshop.webshop.shopping_cart.place_order` and `.request_quotation` on the shared `webshop.webshop.shopping_cart` object.
+- The overrides are identical to the originals except the `_server_messages` parsing: the webshop originals call `JSON.parse(r._server_messages).join("<br>")`, which leaves each array element as a raw JSON-encoded message object. The overrides call `JSON.parse(m).message` on each element to extract just the human-readable text.
+- On error, writes the cleaned message (prefixed with ⚠) into `#cart-error` and calls `show()`.
+- **Why this works:** `cart.js` extends `webshop.webshop.shopping_cart` at script-eval time (synchronously, before `frappe.ready`). The click handler in `cart.js`'s `frappe.ready` calls `shopping_cart.place_order` dynamically, so it picks up the overridden version set in `dalali.js`'s earlier `frappe.ready`.
 
 ---
 
-### `theme.js` — Navbar + Search Typeahead (pre-existing)
+### `theme.js` — Navbar + Search Typeahead
 
 | Feature | Notes |
 |---|---|
@@ -794,6 +838,7 @@ frappe.ready()
 | Recent searches | Stored in `localStorage["recent_searches"]` (max 4 entries) |
 | Search click tracking | POSTs to `dt_recomendations.api.log_search_click` (fire-and-forget) |
 | Wishlist count | `webshop.webshop.wishlist.set_wishlist_count()` via `frappe.ready()` |
+| Logout handler | `[data-action="logout"]` click → `frappe.call('logout')` → redirect to `/login` |
 
 ---
 
@@ -843,6 +888,10 @@ These override the generic theme variables: `--color-primary`, `--color-backgrou
 | Bundle card body | `.dalali-bundle-meta`, `.dalali-bundle-title`, `.dalali-bundle-desc`, `.dalali-bundle-price`, `.dalali-bundle-price-label`, `.dalali-bundle-price-amount` | Meta: gold uppercase "N SKUs"; title: ivory, turns gold-light on hover; desc: 2-line `-webkit-line-clamp`; price: gold amount |
 | Bundle CTA | `.dalali-bundle-cta` | Full-width ivory ghost button; hover: gold fill + ink text + arrow slides right |
 | Horizontal filters | `.dalali-filter-bar`, `.dalali-filter-inner`, `.dalali-filter-select`, `.dalali-filter-browse-btn` | Sticky top filter strip |
+| All-products filter strip | `#dalali-filter-bar.dalali-filter-strip`, `.dalali-filter-strip-inner`, `.dalali-ap-clear` | API-driven filter strip on `/all-products`; `.dalali-ap-clear` is the "Clear All" claret link aligned to bottom of strip |
+| Navbar hamburger (Dalali) | `.dt-hamburger span` | Set to `#F0E8D8` (cream) to be visible on dark `rgba(26,12,15)` navbar; hover: gold-light; open state (X): full gold |
+| Navbar dropdown (Dalali) | `.dt-main-menu .dt-dropdown-menu`, `.dt-main-menu .dt-dropdown-item`, `.dt-dropdown-divider`, `.dt-dropdown-item--danger` | Dark panel matching navbar; items cream; hover: gold-tinted bg; divider: gold-toned 1px line; danger item (Logout): soft red `#F87171`, red-tinted hover |
+| Cart error banner | `#cart-error` | Left-bordered claret panel replacing default Bootstrap alert-danger; `border-left: 4px solid var(--dalali-claret)`, warm bg, claret text, ⚠ icon prefix |
 | PDP CTA buttons | `.dalali-pdp-cta`, `.dalali-pdp-add-btn`, `.dalali-pdp-buy-btn`, `.dalali-pdp-add-btn.added` | Flex row below price block. Add to Cart: outlined claret → fills on hover; turns green on `.added`. Buy Now: solid claret; arrow slides right on hover. Both `flex: 1` to share available width |
 | Webshop suppression | `.dalali-mode .product-price`, `.dalali-mode .item-cart` | Both `display: none !important` — prevents double price display and double cart row |
 | PDP recommended section | `.dalali-pdp-recommended-section` | Ivory bg, `border-top: 1px solid var(--dalali-border)`, `padding: 56px 0 64px`, `margin-top: 48px` |
@@ -1037,6 +1086,108 @@ bench restart
 ---
 
 ## Changelog
+
+### 2026-06-06 — Cart Error Formatter (v2.2)
+
+**`public/js/dalali.js`** (MODIFIED)
+- Added `initCartErrorFormatter()`, called from `frappe.ready()` only on `/cart`.
+- Overrides `webshop.webshop.shopping_cart.place_order` and `.request_quotation` on the shared `shopping_cart` object. The originals call `JSON.parse(r._server_messages).join("<br>")` leaving each element as a raw JSON object string. The overrides unwrap each element: `JSON.parse(m).message || m`.
+- Previous implementation used a `MutationObserver` on `#cart-error` which caused an infinite browser freeze: `busy = false` was set synchronously but the observer callback fires as a microtask after the sync frame, so `busy` was always `false` when the callback ran. Fixed by removing the MutationObserver and overriding the functions directly instead.
+- `showCartError(r)` renders `⚠ <cleaned message>` into `#cart-error` with `.show()`.
+
+**`public/css/theme_dalali.css`** (MODIFIED)
+- Added `#cart-error` rule: removes Bootstrap default red bg, applies left-bordered claret panel (`border-left: 4px solid var(--dalali-claret)`, warm bg, claret text, `0.9rem` font).
+- Added `.dalali-cart-error-icon` for the ⚠ prefix glyph.
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped to `"?v=2.2"`.
+
+---
+
+### 2026-06-06 — Guest Add-to-Cart Redirect (v2.0)
+
+**`public/js/dalali.js`** (MODIFIED)
+- `pdpCartAction()`: added guest guard at top — if `frappe.session.user === "Guest"`, saves `last_visited` to `localStorage` and redirects to `/login?redirect-to=<pathname>` immediately without making the API call. Previously the API call fired, returned HTTP 403, and Frappe showed a "Method Not Allowed" popup before the `error:` callback could redirect.
+- `initCatalogCart()` click handler: same guest guard pattern with `pathname + search` in the redirect URL.
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped to `"?v=2.0"`.
+
+---
+
+### 2026-06-06 — Cart & Wishlist Icons for Guests (v1.9)
+
+**`templates/includes/navbar/navbar.html`** (MODIFIED)
+- Removed `{% if frappe.session.user != "Guest" %}` guards from both the wishlist `<a>` and cart `<a>` links. Icons now always render regardless of auth state.
+- Guests clicking either icon are redirected to `/login` by Frappe's auth gate.
+- Count badges remain empty for guests (no visual dot — Bootstrap badge with empty content).
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped to `"?v=1.9"`.
+
+---
+
+### 2026-06-06 — Context-Aware Navbar Menu (v1.8)
+
+**`templates/includes/navbar/navbar.html`** (MODIFIED)
+- Replaced the `{% if top_bar_items %}` conditional hamburger (only appeared when Website top-bar items were configured) with an **always-visible** hamburger dropdown.
+- Removed the bottom `{% if frappe.session.user == "Guest" %}` block that rendered `navbar_login.html`.
+- Dropdown contents are now purely auth-state driven:
+  - **Logged in:** monitor icon + "Switch to Desk" → `/app`; gold divider; red log-out icon + "Logout" (`data-action="logout"`).
+  - **Guest:** log-in icon + "Login" → `/login`.
+
+**`public/js/theme.js`** (MODIFIED)
+- Added `[data-action="logout"]` click handler: calls `frappe.call({ method: "logout" })` then redirects to `/login`.
+
+**`public/css/theme_dalali.css`** (MODIFIED)
+- Added dark dropdown theme for `.dt-main-menu`: `background: rgba(26,12,15,0.97)`, gold border, cream item text, gold-tinted hover.
+- Added `.dt-dropdown-divider`: 1px gold-tinted separator.
+- Added `.dt-dropdown-item--danger` (Logout): soft red `#F87171`, red-tinted hover.
+- Added flex + icon alignment for `.dt-main-menu .dt-dropdown-item`.
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped to `"?v=1.8"`.
+
+---
+
+### 2026-06-06 — Navbar Hamburger Icon Visibility (v1.7)
+
+**`public/css/theme_dalali.css`** (MODIFIED)
+- Added `.dt-hamburger span { background: #F0E8D8 }` — the three lines were invisible (`background: var(--color-text)` = `#2E1E22` near-black on near-black navbar). Now cream like cart/wishlist icons.
+- Added hover: subtle cream glow background + gold-light lines.
+- Added open state: lines turn full gold (signals active).
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped to `"?v=1.7"`.
+
+---
+
+### 2026-06-06 — All-Products Filter Strip (v1.4–v1.6)
+
+**`api/wholesale.py`** (MODIFIED)
+- Added `get_filter_options()` — returns distinct `item_group` and `brand` values from published `Website Item` records. Used by the filter strip independently of Webshop Settings `enable_field_filters` flag.
+
+**`public/js/dalali.js`** (MODIFIED)
+- `convertFiltersToHorizontal()` completely rewritten (twice — first version read webshop sidebar checkboxes which didn't exist because `enable_field_filters = False`):
+  - Hides sidebar col, expands product col to `col-md-12` immediately.
+  - Calls `get_filter_options` API to get Type/Brand values.
+  - Builds `#dalali-filter-bar` with two `<select>` dropdowns (same CSS as homepage filter strip).
+  - On change: navigates to `/all-products?field_filters={"fieldname":["value"]}`.
+  - Reads current URL `field_filters` param to pre-select active values.
+  - Adds `.dalali-ap-clear` "Clear All" link when filters are active.
+
+**`public/css/theme_dalali.css`** (MODIFIED)
+- Added `.dalali-ap-clear` and `.dalali-ap-clear:hover` — claret "Clear All" link aligned to filter strip bottom.
+
+**Item card image white space fix** (also in this range):
+- `.item-card .card-img-container { padding: 0 }` — removes default card padding.
+- `.item-card .card-img-container > a { display: block; width: 100%; height: 100% }` — inline `<a>` was preventing height propagation to `<img>`.
+- `.item-card .card-img { display: block; margin-top: 0 !important }` — webshop bundle CSS had `margin-top: 1.25rem` on `.item-card-group-section .card-img`.
+
+**`hooks.py`** (MODIFIED)
+- `_V` bumped through `"?v=1.4"` → `"?v=1.5"` → `"?v=1.6"` across these fixes.
+
+---
 
 ### 2026-05-29 — PDP CTA Buttons + Recommended Items (v1.3)
 

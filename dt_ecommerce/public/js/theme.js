@@ -269,6 +269,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+  // LOGOUT
+  document.querySelector('[data-action="logout"]')?.addEventListener("click", (e) => {
+    e.preventDefault();
+    frappe.call({ method: "logout", callback: () => { window.location.href = "/login"; } });
+  });
+
   // OUTSIDE CLICK (safe version)
   document.addEventListener("click", (e) => {
     if (dropdown && !dropdown.contains(e.target)) {

@@ -188,6 +188,41 @@ def get_recommended_items(item_code: str, limit: int = 8) -> list[dict]:
 
 
 @frappe.whitelist(allow_guest=True)
+def get_filter_options() -> dict:
+	"""Return distinct item_group and brand values from published Website Items.
+
+	Used to populate the horizontal filter strip on /all-products independently
+	of Webshop Settings filter configuration.
+	"""
+	item_groups = frappe.db.sql(
+		"""
+		SELECT DISTINCT wi.item_group
+		FROM `tabWebsite Item` wi
+		WHERE wi.published = 1
+		  AND wi.item_group IS NOT NULL AND wi.item_group != ''
+		ORDER BY wi.item_group ASC
+		""",
+		as_dict=True,
+	)
+
+	brands = frappe.db.sql(
+		"""
+		SELECT DISTINCT wi.brand
+		FROM `tabWebsite Item` wi
+		WHERE wi.published = 1
+		  AND wi.brand IS NOT NULL AND wi.brand != ''
+		ORDER BY wi.brand ASC
+		""",
+		as_dict=True,
+	)
+
+	return {
+		"item_group": [r["item_group"] for r in item_groups],
+		"brand":      [r["brand"]      for r in brands],
+	}
+
+
+@frappe.whitelist(allow_guest=True)
 def get_category_grid(limit: int = 8) -> list[dict]:
 	"""Return Item Groups visible on the website for the category grid."""
 	groups = frappe.db.get_all(

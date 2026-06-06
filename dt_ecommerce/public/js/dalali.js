@@ -23,6 +23,10 @@ frappe.ready(function () {
 	if (document.getElementById("dalali-products")) {
 		initProductCards();
 	}
+
+	if (window.location.pathname === "/cart") {
+		initCartErrorFormatter();
+	}
 });
 
 /* ─── Page Detection ─────────────────────────────────────── */
@@ -217,6 +221,12 @@ function injectUnitCaseToggle(itemCode, bottlePrice, caseSize, tiers) {
 
 /* Shared cart action used by both PDP CTA buttons */
 function pdpCartAction(itemCode, qty, buyNow, btn) {
+	if (frappe.session.user === "Guest") {
+		if (localStorage) localStorage.setItem("last_visited", window.location.pathname);
+		window.location.href = "/login?redirect-to=" + encodeURIComponent(window.location.pathname);
+		return;
+	}
+
 	const origHTML = btn.innerHTML;
 	btn.disabled = true;
 
@@ -555,63 +565,113 @@ function injectCategoryGrid() {
 }
 
 function convertFiltersToHorizontal() {
-	// Move the webshop sidebar filter panel into a sticky horizontal bar
 	const sidebar = document.querySelector(".filters-section");
 	const productCol = document.querySelector("#product-listing");
 	const parentRow = sidebar?.closest(".row");
-	if (!sidebar || !productCol || document.getElementById("dalali-filter-bar")) return;
+	if (!productCol || document.getElementById("dalali-filter-bar")) return;
 
-	// Build the horizontal bar from existing filter selects
-	const bar = document.createElement("div");
-	bar.id = "dalali-filter-bar";
-	bar.className = "dalali-filter-bar";
-	bar.innerHTML = `
-		<div class="dalali-filter-inner">
-			<span style="font-size:13px;font-weight:600;color:var(--dalali-muted);white-space:nowrap;">
-				${__("Filter by:")}
-			</span>
-		</div>`;
+	// Expand grid immediately so layout shifts don't wait for the API call
+	const sidebarCol = sidebar ? sidebar.closest("[class*='col-md-3']") : null;
+	if (sidebarCol) sidebarCol.style.display = "none";
+	productCol.classList.remove("col-md-9");
+	productCol.classList.add("col-md-12");
 
-	const filterInner = bar.querySelector(".dalali-filter-inner");
+	// Read active filters from URL
+	const qp = frappe.utils.get_query_params();
+	let activeField = {};
+	try { activeField = JSON.parse(qp.field_filters || "{}"); } catch (e) { /**/ }
 
-	// Clone existing filter controls into the horizontal bar
-	sidebar.querySelectorAll("select, input[type='checkbox']").forEach((el) => {
-		const label = el.closest(".form-group, .filter-item")?.querySelector("label");
-		const wrap = document.createElement("div");
+	// Fetch filter options from our own API (independent of Webshop Settings)
+	frappe.call({
+		method: "dt_ecommerce.api.wholesale.get_filter_options",
+		callback: function (r) {
+			const opts = r.message || {};
+			const defs = [
+				{ name: "item_group", label: __("Type"),  values: opts.item_group || [] },
+				{ name: "brand",      label: __("Brand"), values: opts.brand      || [] },
+			];
 
-		if (el.tagName === "SELECT") {
-			el.classList.add("dalali-filter-select");
-			const clone = el.cloneNode(true);
-			clone.addEventListener("change", function () {
-				// Mirror change back to the original hidden sidebar select
-				el.value = this.value;
-				el.dispatchEvent(new Event("change", { bubbles: true }));
+			// Only build the strip if at least one filter has values
+			if (!defs.some(function (d) { return d.values.length; })) return;
+
+			const bar = document.createElement("div");
+			bar.id = "dalali-filter-bar";
+			bar.className = "dalali-filter-strip";
+
+			const inner = document.createElement("div");
+			inner.className = "dalali-filter-strip-inner";
+			bar.appendChild(inner);
+
+			const prefix = document.createElement("span");
+			prefix.className = "dalali-filter-label";
+			prefix.textContent = __("Filter by:");
+			inner.appendChild(prefix);
+
+			defs.forEach(function (def) {
+				if (!def.values.length) return;
+
+				const active = activeField[def.name] || [];
+
+				const wrap = document.createElement("div");
+				wrap.className = "dalali-filter-field";
+
+				const lbl = document.createElement("label");
+				lbl.className = "dalali-filter-field-label";
+				lbl.htmlFor = "apf-" + def.name;
+				lbl.textContent = def.label;
+
+				const sel = document.createElement("select");
+				sel.id = "apf-" + def.name;
+				sel.className = "dalali-select";
+				sel.dataset.filterName = def.name;
+
+				const blank = document.createElement("option");
+				blank.value = "";
+				blank.textContent = __("All") + " " + def.label + "s";
+				sel.appendChild(blank);
+
+				def.values.forEach(function (v) {
+					const opt = document.createElement("option");
+					opt.value = v;
+					opt.textContent = v;
+					if (active.includes(v)) opt.selected = true;
+					sel.appendChild(opt);
+				});
+
+				sel.addEventListener("change", function () {
+					const newField = {};
+					inner.querySelectorAll("[data-filter-name]").forEach(function (s) {
+						if (s.value) newField[s.dataset.filterName] = [s.value];
+					});
+					// ensure the changed select's value is captured correctly
+					if (sel.value) newField[def.name] = [sel.value];
+					else           delete newField[def.name];
+
+					const parts = {};
+					if (Object.keys(newField).length) parts.field_filters = JSON.stringify(newField);
+					const qs = new URLSearchParams(parts).toString();
+					window.location.href = "/all-products" + (qs ? "?" + qs : "");
+				});
+
+				wrap.appendChild(lbl);
+				wrap.appendChild(sel);
+				inner.appendChild(wrap);
 			});
-			wrap.appendChild(clone);
-		}
-		filterInner.appendChild(wrap);
-	});
 
-	// Browse button
-	const browseBtn = document.createElement("button");
-	browseBtn.className = "dalali-filter-browse-btn";
-	browseBtn.textContent = __("Browse");
-	browseBtn.addEventListener("click", () => {
-		const params = new URLSearchParams(window.location.search);
-		filterInner.querySelectorAll(".dalali-filter-select").forEach((sel) => {
-			if (sel.value) params.set(sel.name || "filter", sel.value);
-		});
-		window.location.search = params.toString();
-	});
-	filterInner.appendChild(browseBtn);
+			// Clear All — only when a filter is active
+			if (Object.keys(activeField).length) {
+				const clearLink = document.createElement("a");
+				clearLink.href = "/all-products";
+				clearLink.className = "dalali-ap-clear";
+				clearLink.textContent = __("Clear All");
+				inner.appendChild(clearLink);
+			}
 
-	// Insert bar above product listing, hide original sidebar
-	if (parentRow) {
-		parentRow.parentNode.insertBefore(bar, parentRow);
-		sidebar.closest(".col-12.col-md-3")?.style.setProperty("display", "none");
-		productCol.classList.remove("col-md-9");
-		productCol.classList.add("col-md-12");
-	}
+			// Insert strip above the product row
+			const anchor = parentRow || productCol;
+			anchor.parentNode.insertBefore(bar, anchor);
+		},
+	});
 }
 
 /* ─── Homepage: Tiered Pricing Product Cards ─────────────── */
@@ -832,6 +892,12 @@ function initCatalogCart() {
 			if (!card) return;
 			const itemCode = card.dataset.itemCode;
 
+			if (frappe.session.user === "Guest") {
+				if (localStorage) localStorage.setItem("last_visited", window.location.pathname + window.location.search);
+				window.location.href = "/login?redirect-to=" + encodeURIComponent(window.location.pathname + window.location.search);
+				return;
+			}
+
 			// Disable briefly to prevent double-click
 			btn.disabled = true;
 
@@ -860,6 +926,73 @@ function initCatalogCart() {
 			});
 		});
 	});
+}
+
+/* ─── Cart Error Formatter ───────────────────────────────── */
+
+function initCartErrorFormatter() {
+	// cart.js extends webshop.webshop.shopping_cart at script-eval time (before
+	// frappe.ready), so by the time this function runs the originals already exist.
+	if (typeof webshop === "undefined") return;
+	var sc = webshop.webshop.shopping_cart;
+	if (!sc) return;
+
+	function parseServerMessages(raw) {
+		if (!raw) return null;
+		try {
+			// r._server_messages is JSON array of JSON-encoded message objects
+			return JSON.parse(raw).map(function (m) {
+				try { return JSON.parse(m).message || m; }
+				catch (e) { return m; }
+			}).filter(Boolean).join("<br>");
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function showCartError(r) {
+		var msg = parseServerMessages(r._server_messages) || __("Something went wrong!");
+		$("#cart-error")
+			.empty()
+			.html('<span class="dalali-cart-error-icon">&#9888;</span> ' + msg)
+			.show();
+	}
+
+	sc.place_order = function (btn) {
+		sc.freeze();
+		return frappe.call({
+			type: "POST",
+			method: "webshop.webshop.shopping_cart.cart.place_order",
+			btn: btn,
+			callback: function (r) {
+				if (r.exc) {
+					sc.unfreeze();
+					showCartError(r);
+				} else {
+					$(btn).hide();
+					window.location.href = "/orders/" + encodeURIComponent(r.message);
+				}
+			}
+		});
+	};
+
+	sc.request_quotation = function (btn) {
+		sc.freeze();
+		return frappe.call({
+			type: "POST",
+			method: "webshop.webshop.shopping_cart.cart.request_for_quotation",
+			btn: btn,
+			callback: function (r) {
+				if (r.exc) {
+					sc.unfreeze();
+					showCartError(r);
+				} else {
+					$(btn).hide();
+					window.location.href = "/quotations/" + encodeURIComponent(r.message);
+				}
+			}
+		});
+	};
 }
 
 /* ─── Helpers ────────────────────────────────────────────── */

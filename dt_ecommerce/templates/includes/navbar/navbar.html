@@ -61,102 +61,63 @@
           </svg>
         </button>
       {% endif %}
-      {% if frappe.session.user != "Guest" %}
-        <a href="/wishlist" class="dt-nav-link" aria-label="Wishlist">
+      <a href="/wishlist" class="dt-nav-link" aria-label="Wishlist">
 
-          <svg class="icon icon-md">
-            <use href="#icon-heart"></use>
-          </svg>
+        <svg class="icon icon-md">
+          <use href="#icon-heart"></use>
+        </svg>
 
-          <span id="wish-count" class="badge badge-danger"
-                style="position:absolute; top:-5px; right:-5px;"></span>
+        <span id="wish-count" class="badge badge-danger"
+              style="position:absolute; top:-5px; right:-5px;"></span>
 
-        </a>
-      {% endif %}
+      </a>
 
-      {% if frappe.session.user != "Guest" %}
-        <a href="/cart" class="dt-nav-link" aria-label="Cart">
+      <a href="/cart" class="dt-nav-link" aria-label="Cart">
 
-          <svg class="icon icon-md">
-            <use href="#icon-shopping-cart"></use>
-          </svg>
+        <svg class="icon icon-md">
+          <use href="#icon-shopping-cart"></use>
+        </svg>
 
-          <span id="cart-count" class="badge badge-danger"
-                style="position:absolute; top:-5px; right:-5px;"></span>
+        <span id="cart-count" class="badge badge-danger"
+              style="position:absolute; top:-5px; right:-5px;"></span>
 
-        </a>
-      {% endif %}
-      <!-- Collapsed menu -->
-      {% if frappe.session.user != "Guest" %}
-        {% if top_bar_items %}
-          <div class="dt-dropdown dt-main-menu">
+      </a>
+      <!-- Menu (always shown) -->
+      <div class="dt-dropdown dt-main-menu">
 
-            <!-- Trigger -->
-            <button class="dt-menu-trigger dt-hamburger" aria-label="Open menu">
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
+        <button class="dt-menu-trigger dt-hamburger" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-            <!-- Dropdown -->
-            <div class="dt-dropdown-menu">
+        <div class="dt-dropdown-menu">
 
-              {% for item in top_bar_items if not item.parent_label and not item.right %}
+          {% if frappe.session.user != "Guest" %}
 
-                {% if item.child_items %}
-                  <div class="dt-dropdown-group">
-                    <div class="dt-dropdown-title">{{ item.label }}</div>
+            <a href="/app" class="dt-dropdown-item">
+              <svg class="icon icon-sm"><use href="#icon-monitor"></use></svg>
+              {{ _("Switch to Desk") }}
+            </a>
 
-                    {% for child in item.child_items %}
-                      <a href="{{ child.url }}" class="dt-dropdown-item">
-                        {{ child.label }}
-                      </a>
-                    {% endfor %}
-                  </div>
+            <div class="dt-dropdown-divider"></div>
 
-                {% else %}
-                  <a href="{{ item.url }}" class="dt-dropdown-item">
-                    {{ item.label }}
-                  </a>
-                {% endif %}
+            <a href="#" class="dt-dropdown-item dt-dropdown-item--danger" data-action="logout">
+              <svg class="icon icon-sm"><use href="#icon-log-out"></use></svg>
+              {{ _("Logout") }}
+            </a>
 
-              {% endfor %}
+          {% else %}
 
-              <!-- Left menu items -->
-              {% for item in top_bar_items if not item.parent_label and item.right %}
-                <!-- <a href="{{ item.url }}" class="dt-nav-link">
-                  {{ item.label }}
-                </a> -->
-                {% if item.child_items %}
-                  <div class="dt-dropdown-group">
-                    <div class="dt-dropdown-title">{{ item.label }}</div>
+            <a href="/login" class="dt-dropdown-item">
+              <svg class="icon icon-sm"><use href="#icon-log-in"></use></svg>
+              {{ _("Login") }}
+            </a>
 
-                    {% for child in item.child_items %}
-                      <a href="{{ child.url }}" class="dt-dropdown-item">
-                        {{ child.label }}
-                      </a>
-                    {% endfor %}
-                  </div>
+          {% endif %}
 
-                {% else %}
-                  <a href="{{ item.url }}" class="dt-dropdown-item">
-                    {{ item.label }}
-                  </a>
-                {% endif %}
-              {% endfor %}
-
-            </div>
-          </div>
-        {% endif %}
-      {% endif %}
-
-      {% if frappe.session.user == "Guest" %}
-        <!-- Login -->
-        {% include "templates/includes/navbar/navbar_login.html" %}
-        <div class="form-group mb-0 hide frm-lng-picker" id="language-switcher">
-          <select class="form-control"></select>
         </div>
-      {% endif %}
+      </div>
 
     </div>
 
