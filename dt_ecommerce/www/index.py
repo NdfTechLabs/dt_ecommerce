@@ -97,7 +97,7 @@ def get_context(context):
 		"Website Item",
 		filters={"published": 1},
 		fields=["item_code", "web_item_name", "website_image", "item_group", "route"],
-		order_by="ranking desc, modified desc",
+		order_by="ranking desc, modified asc",
 		limit_page_length=8,
 	)
 	for item in web_items:

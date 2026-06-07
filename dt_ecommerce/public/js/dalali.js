@@ -60,7 +60,7 @@ function injectPromoBar() {
 					</svg>
 					${__("Send Wholesale Quote")}
 				</a>
-				<span>📞 +254 706 542 222</span>
+				<span>📞 +254 71 056 1818</span>
 			</span>
 		</div>`;
 
