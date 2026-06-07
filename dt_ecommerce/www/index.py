@@ -24,7 +24,7 @@ def get_context(context):
 	groups = frappe.get_all(
 		"Item Group",
 		filters={"show_in_website": 1, "is_group": 0},
-		fields=["name", "item_group_name", "route", "website_image", "image"],
+		fields=["name", "item_group_name", "route", "image"], #, "website_image"
 		order_by="name asc",
 		limit_page_length=8,
 	)
