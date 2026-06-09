@@ -1,7 +1,5 @@
 import json
 
-from matplotlib.style import context
-
 import frappe
 from frappe.utils import quote, flt
 
