@@ -1,3 +1,7 @@
+import json
+
+from matplotlib.style import context
+
 import frappe
 from frappe.utils import quote, flt
 
@@ -155,5 +159,37 @@ def get_context(context):
 	except Exception:
 		pass
 	context.wholesale_bundles = bundles
+
+	try:
+		config = frappe.get_all(
+			"Homepage Configuration Section",
+			fields=[
+				"section_id",
+				"source",
+				"value",
+				"limit",
+				"title"
+			]
+		)
+
+		context.homepage_sections = [
+			{
+				"section_id": row.section_id,
+				"source": row.source,
+				"value": row.value,
+				"limit": row.limit or 6,
+				"title": getattr(row, "title", ""),
+			}
+			for row in config
+			if row.section_id
+		]
+
+		context.homepage_sections_json = json.dumps(
+			context.homepage_sections
+		)
+
+	except Exception:
+		context.homepage_sections = []
+		context.homepage_sections_json = "[]"
 
 	return context

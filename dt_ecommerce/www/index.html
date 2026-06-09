@@ -152,6 +152,44 @@
 </section><!-- /.dalali-category-section -->
 {% endif %}
 
+{% if homepage_sections %}
+
+    {% for section in homepage_sections %}
+
+    <section
+        id="{{ section.section_id }}"
+        class="dalali-products-section {% if section.source == 'category' %}category{% endif %}"
+    >
+
+        <div class="container">
+
+            {% if section.title %}
+            <div class="dalali-section-header">
+                <h2 class="dalali-section-title">
+                    {{ section.title }}
+                </h2>
+            </div>
+            {% endif %}
+
+            {% if section.source == "category" %}
+            <div
+                data-item-group="{{ section.value }}"
+                hidden
+            ></div>
+            {% endif %}
+
+            <div class="row">
+                <!-- JS injects recommendation cards here -->
+            </div>
+
+        </div>
+
+    </section>
+
+    {% endfor %}
+
+{% endif %}
+
 <!-- ═══════════════════════════════════════════════════════════
      PROMOTIONAL BANNER / ANNOUNCEMENT STRIP
 ═══════════════════════════════════════════════════════════ -->
@@ -409,5 +447,9 @@
 	</div><!-- /.container -->
 </section><!-- /.dalali-bundles-section -->
 {% endif %}
+
+<script>
+	window.HOMEPAGE_SECTIONS = {{ homepage_sections_json }};
+</script>
 
 {% endblock %}

@@ -93,28 +93,60 @@
 
         <div class="dt-dropdown-menu">
 
-          {% if frappe.session.user != "Guest" %}
+            {%- for item in top_bar_items -%}
+                {% if not item.parent_label and item.right %}
 
-            <a href="/app" class="dt-dropdown-item">
-              <svg class="icon icon-sm"><use href="#icon-monitor"></use></svg>
-              {{ _("Switch to Desk") }}
-            </a>
+                    <a href="{{ item.url or item.route }}"
+                      class="dt-dropdown-item"
+                      {% if item.target %}target="{{ item.target }}"{% endif %}>
 
-            <div class="dt-dropdown-divider"></div>
+                        {% if item.label %}
+                            {{ _(item.label) }}
+                        {% endif %}
 
-            <a href="#" class="dt-dropdown-item dt-dropdown-item--danger" data-action="logout">
-              <svg class="icon icon-sm"><use href="#icon-log-out"></use></svg>
-              {{ _("Logout") }}
-            </a>
+                    </a>
 
-          {% else %}
+                    {% if not loop.last %}
+                        <div class="dt-dropdown-divider"></div>
+                    {% endif %}
 
-            <a href="/login" class="dt-dropdown-item">
-              <svg class="icon icon-sm"><use href="#icon-log-in"></use></svg>
-              {{ _("Login") }}
-            </a>
+                {% endif %}
+            {%- endfor %}
 
-          {% endif %}
+            {% if top_bar_items %}
+                <div class="dt-dropdown-divider"></div>
+            {% endif %}
+
+            {% if frappe.session.user != "Guest" %}
+
+                <a href="/app" class="dt-dropdown-item">
+                    <svg class="icon icon-sm">
+                        <use href="#icon-monitor"></use>
+                    </svg>
+                    {{ _("Switch to Desk") }}
+                </a>
+
+                <div class="dt-dropdown-divider"></div>
+
+                <a href="#"
+                  class="dt-dropdown-item dt-dropdown-item--danger"
+                  data-action="logout">
+                    <svg class="icon icon-sm">
+                        <use href="#icon-log-out"></use>
+                    </svg>
+                    {{ _("Logout") }}
+                </a>
+
+            {% else %}
+
+                <a href="/login" class="dt-dropdown-item">
+                    <svg class="icon icon-sm">
+                        <use href="#icon-log-in"></use>
+                    </svg>
+                    {{ _("Login") }}
+                </a>
+
+            {% endif %}
 
         </div>
       </div>
