@@ -1,0 +1,56 @@
+<div class="dalali-filter-strip">
+		<div class="dalali-filter-strip-inner">
+
+			<span class="dalali-filter-label">{{ _("Filter by:") }}</span>
+
+			<!-- Type / Item Group -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-item-group">{{ _("Type") }}</label>
+				<select id="fs-item-group" class="dalali-select" name="item_group" aria-label="{{ _('Filter by type') }}">
+					<option value="">{{ _("All Types") }}</option>
+					{% for cat in categories %}
+					<option value="{{ cat.name | e }}">{{ cat.item_group_name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Brand -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-brand">{{ _("Brand") }}</label>
+				<select id="fs-brand" class="dalali-select" name="brand" aria-label="{{ _('Filter by brand') }}">
+					<option value="">{{ _("All Brands") }}</option>
+					{% for brand in brands %}
+					<option value="{{ brand.name | e }}">{{ brand.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Region -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-region">{{ _("Region") }}</label>
+				<select id="fs-region" class="dalali-select" name="custom_region" aria-label="{{ _('Filter by region') }}">
+					<option value="">{{ _("All Regions") }}</option>
+					{% for region in regions %}
+					<option value="{{ region.name | e }}">{{ region.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Varietal / Style -->
+			<div class="dalali-filter-field">
+				<label class="dalali-filter-field-label" for="fs-varietal">{{ _("Varietal / Style") }}</label>
+				<select id="fs-varietal" class="dalali-select" name="custom_varietal" aria-label="{{ _('Filter by varietal') }}">
+					<option value="">{{ _("All Varietals") }}</option>
+					{% for varietal in varietals %}
+					<option value="{{ varietal.name | e }}">{{ varietal.name | e }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<!-- Browse CTA -->
+			<button type="submit" class="dalali-btn-browse">
+				{{ _("Browse Inventory") }}
+			</button>
+
+		</div><!-- /.dalali-filter-strip-inner -->
+	</div>

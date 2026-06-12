@@ -1,5 +1,5 @@
 import frappe
-
+from frappe.utils import flt
 
 def extend_dalali_context(context: dict) -> None:
 	"""Inject Dalali wholesale data into the website rendering context.
@@ -45,3 +45,39 @@ def dalali_bootstrap_script(context: dict) -> str:
 		f'window.dalali_case_size = {int(case_size)};'
 		f'</script>'
 	)
+
+def enrich_website_items(items):
+    for item in items:
+        price_data = frappe.db.get_value(
+            "Item Price",
+            {
+                "item_code": item["item_code"],
+                "selling": 1
+            },
+            ["price_list_rate", "currency"],
+            as_dict=True,
+        ) or {}
+
+        item["price"] = flt(
+            price_data.get("price_list_rate") or 0
+        )
+
+        item["currency"] = (
+            price_data.get("currency") or "KES"
+        )
+
+        item["case_size"] = int(
+            frappe.db.get_value(
+                "Item",
+                item["item_code"],
+                "custom_case_size"
+            ) or 12
+        )
+
+        item["url"] = (
+            f"/{item['route']}"
+            if item.get("route")
+            else "#"
+        )
+
+    return items
