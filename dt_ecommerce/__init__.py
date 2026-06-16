@@ -1,1 +1,1 @@
-__version__ = "1.1.6" # fix: Separate homepage into components in templates/include
+__version__ = "1.1.7" # fix: make the image fit the container and not overflow
