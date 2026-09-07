@@ -11,13 +11,14 @@ app_license = "agpl-3.0"
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
+# Added app entry for dt_ecommerce in the apps screen, with a logo and route to the app.
 # add_to_apps_screen = [
 # 	{
 # 		"name": "dt_ecommerce",
-# 		"logo": "/assets/dt_ecommerce/logo.png",
-# 		"title": "Dt Ecommerce",
-# 		"route": "/dt_ecommerce",
-# 		"has_permission": "dt_ecommerce.api.permission.has_app_permission"
+# 		"logo": "/assets/dt_ecommerce/images/logo.png",
+# 		"title": "E-commerce",
+# 		"route": "/desk",
+		# "has_permission": "dt_ecommerce.api.permission.has_app_permission"
 # 	}
 # ]
 
@@ -38,8 +39,8 @@ app_license = "agpl-3.0"
 # ]
 
 # include js, css files in header of web template
-web_include_css = "/assets/dt_ecommerce/css/dt_ecommerce.css"
-web_include_js = "/assets/dt_ecommerce/js/dt_ecommerce.js"
+# web_include_css = "/assets/dt_ecommerce/css/dt_ecommerce.css"
+# web_include_js = "/assets/dt_ecommerce/js/dt_ecommerce.js"
 required_apps = ["webshop"]
 
 # v=1.2 — bump this whenever CSS/JS changes to force all browsers to re-fetch
@@ -55,6 +56,7 @@ web_include_css = [
 web_include_js = [
     "/assets/dt_ecommerce/js/theme.js"  + _V,
     "/assets/dt_ecommerce/js/dalali.js" + _V,
+    "/assets/dt_ecommerce/js/components/promo_bar.js" + _V,
 ]
 
 fixtures = [
