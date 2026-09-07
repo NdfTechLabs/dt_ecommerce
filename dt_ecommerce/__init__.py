@@ -1,1 +1,1 @@
-__version__ = "1.1.7" # fix: make the image fit the container and not overflow
+__version__ = "1.1.8" # fix: make the image fit the container and not overflow
