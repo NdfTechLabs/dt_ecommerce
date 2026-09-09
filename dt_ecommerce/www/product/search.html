@@ -4,24 +4,31 @@
 
 {% block page_content %}
 
-{% from "webshop/templates/includes/macros.html" import item_card %}
+<div class="dt-search-page">
 
-<h3>
-    {% if q %}
-        {{ _("Search results for") }}: "{{ q }}"
-    {% else %}
-        {{ _("Search Results") }}
-    {% endif %}
-</h3>
+    <h3 class="dt-search-title">
+        {% if q %}
+            {{ _("Search results for") }}: "{{ q }}"
+        {% else %}
+            {{ _("Search Results") }}
+        {% endif %}
+    </h3>
 
-<div class="row">
-    {% if items and items|length %}
-        {% for item in items %}
-            {{ item_card(item, is_full_width=True, align="Center") }}
-        {% endfor %}
-    {% else %}
+    <div
+        id="search-product-grid"
+        class="row item-card-group-section"
+    >
+    </div>
+
+    <div id="search-no-results" class="text-center hidden">
         <p>{{ _("No results found") }}</p>
-    {% endif %}
+    </div>
+
 </div>
+
+<script>
+    window.SEARCH_ITEMS = {{ items | tojson }};
+    window.WEBSHOP_SETTINGS = {{ webshop_settings | tojson }};
+</script>
 
 {% endblock %}

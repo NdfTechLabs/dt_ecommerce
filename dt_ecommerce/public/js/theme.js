@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${products.map(p => `
               <a href="/${p.route}" data-item-code="${p.item_code}">
                 <div class="dt-search-item">
-                  <img src="${p.thumbnail || '/assets/webshop/images/cart-empty-state.png'}" />
+                  <img src="${p.thumbnail || p.website_image || '/assets/webshop/images/cart-empty-state.png'}" />
                   <p>${p.web_item_name}</p>
                 </div>
               </a>

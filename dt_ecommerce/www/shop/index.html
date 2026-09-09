@@ -1,0 +1,78 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+
+    {% if slides %}
+        {% include "dt_ecommerce/templates/includes/hero_slider/index.html" with context %}
+    {% endif %}
+
+    {% if homepage_sections %}
+
+    
+
+        {% for section in homepage_sections %}
+
+        
+
+        <section
+            id="{{ section.section_id }}"
+            class="products-section {% if section.source == 'category' %}category{% endif %}"
+        >
+
+            <div class="container">
+
+
+                {% if section.media_type == "Image" and section.image %}
+                    <div class="homepage-section-image">
+                        <img
+                            src="{{ section.image }}"
+                            alt="{{ section.title or section.section_id }}"
+                            loading="lazy"
+                        >
+                    </div>
+
+                {% elif section.media_type == "Video" and section.video %}
+                    <div class="homepage-section-video">
+                        <video
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            preload="auto"
+                        >
+                            <source src="{{ section.video }}">
+                        </video>
+                    </div>
+                {% endif %}
+                {% if section.title %}
+                <div class=section-header">
+                    <h2 class="section-title">
+                        {{ section.title }}
+                    </h2>
+                </div>
+                {% endif %}
+
+                {% if section.source == "category" %}
+                <div
+                    data-item-group="{{ section.value }}"
+                    hidden
+                ></div>
+                {% endif %}
+
+                <div class="row item-card-group-section">
+                    <!-- JS injects recommendation cards here -->
+                </div>
+
+            </div>
+
+        </section>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <script>
+     window.HOMEPAGE_SECTIONS = {{ homepage_sections_json }};
+    </script>
+
+{% endblock %}

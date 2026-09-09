@@ -55,6 +55,14 @@
     <!-- Right -->
     <div class="dt-navbar-right">
 
+      <a href="/shop" class="dt-nav-link" aria-label="Home">
+
+        <svg class="icon icon-md">
+          <use href="#icon-home"></use>
+        </svg>
+
+      </a>
+
       {% if navbar_search %}
         <button class="dt-search-trigger" aria-label="Search">
           <svg class="icon icon-md">
@@ -62,7 +70,7 @@
           </svg>
         </button>
       {% endif %}
-      <a href="/wishlist" class="dt-nav-link" aria-label="Wishlist">
+      <a href="/wishlist" class="dt-nav-link dt-wish-list-icon" aria-label="Wishlist">
 
         <svg class="icon icon-md">
           <use href="#icon-heart"></use>
@@ -94,13 +102,28 @@
 
         <div class="dt-dropdown-menu">
 
+            {% set icons = {
+                  "Products": "icon-box",
+                  "Categories": "icon-folder",
+                  "Orders": "icon-shopping-cart",
+                  "Invoices": "icon-file",
+                  "Shipments": "icon-truck",
+                  "Issues": "icon-help",
+                  "Addresses": "icon-map-pin",
+                  "My Account": "icon-user"
+                }
+             %}
+
             {%- for item in top_bar_items -%}
                 {% if not item.parent_label and item.right %}
 
                     <a href="{{ item.url or item.route }}"
                       class="dt-dropdown-item"
                       {% if item.target %}target="{{ item.target }}"{% endif %}>
-
+                        
+                        <svg class="icon icon-sm">
+                            <use href="#{{ icons.get(item.label, 'icon-circle') }}"></use>
+                        </svg>
                         {% if item.label %}
                             {{ _(item.label) }}
                         {% endif %}

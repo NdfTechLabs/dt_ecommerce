@@ -14,11 +14,14 @@ class HomepageConfigurationSection(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		image: DF.AttachImage | None
 		limit: DF.Int
+		media_type: DF.Literal["Image", "Video"]
 		section_id: DF.Data | None
-		source: DF.Data | None
+		source: DF.Literal["trending", "best_sellers", "recommended", "category", "offer", "promotion"]
 		title: DF.Data | None
 		value: DF.Data | None
+		video: DF.Attach | None
 	# end: auto-generated types
 
 	pass

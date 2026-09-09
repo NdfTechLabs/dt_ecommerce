@@ -1,0 +1,43 @@
+<div class="dt-hero-slider" data-hero-slider>
+
+    {% for slide in slides %}
+        <div class="dt-hero-slide {{ 'active' if loop.first else '' }}">
+
+            <img
+                src="{{ slide.image }}"
+                alt="{{ _(slide.title) }}"
+                class="dt-hero-slide-image"
+            >
+
+            <div class="dt-hero-overlay"></div>
+
+            <div class="dt-hero-content">
+
+                {% if slide.title %}
+                    <h1>{{ _(slide.title) }}</h1>
+                {% endif %}
+
+                {% if slide.subtitle %}
+                    <p>{{ _(slide.subtitle) }}</p>
+                {% endif %}
+
+                {% if slide.action %}
+                    <a href="{{ slide.action }}">
+                        {{ _(slide.label or "Shop Now") }}
+                    </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+    {% endfor %}
+
+    <button class="dt-hero-prev" data-hero-prev>
+        ‹
+    </button>
+
+    <button class="dt-hero-next" data-hero-next>
+        ›
+    </button>
+
+</div>

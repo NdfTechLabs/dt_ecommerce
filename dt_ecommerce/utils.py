@@ -47,32 +47,116 @@ def dalali_bootstrap_script(context: dict) -> str:
 	)
 
 def enrich_website_items(items):
+    from webshop.webshop.shopping_cart.product_info import (
+        get_product_info_for_website,
+        set_product_info_for_website,
+    )
+
     for item in items:
-        price_data = frappe.db.get_value(
-            "Item Price",
-            {
-                "item_code": item["item_code"],
-                "selling": 1
-            },
-            ["price_list_rate", "currency"],
-            as_dict=True,
-        ) or {}
+        item_code = item["item_code"]
+
+        # ---------------------------------------------------------
+        # Let native Webshop populate its standard product info
+        # ---------------------------------------------------------
+
+        set_product_info_for_website(item)
+
+        # ---------------------------------------------------------
+        # Get native product/cart information
+        # ---------------------------------------------------------
+
+        try:
+            response = get_product_info_for_website(
+                item_code,
+                skip_quotation_creation=True
+            ) or {}
+
+            product_info = response.get("product_info") or {}
+            cart_settings = response.get("cart_settings") or {}
+
+        except Exception:
+            product_info = {}
+            cart_settings = {}
+
+        # ---------------------------------------------------------
+        # Native ProductGrid properties
+        # ---------------------------------------------------------
+
+        item["has_variants"] = bool(
+            item.get("has_variants")
+        )
+
+        item["on_backorder"] = bool(
+            product_info.get("on_backorder")
+        )
+
+        item["in_stock"] = bool(
+            product_info.get("in_stock")
+        )
+
+        # These are not provided by get_product_info_for_website()
+        # so default them unless you populate them elsewhere.
+        item["wished"] = bool(
+            item.get("wished", False)
+        )
+
+        item["in_cart"] = bool(
+            item.get("in_cart", False)
+        )
+
+        # ---------------------------------------------------------
+        # Price information
+        # ---------------------------------------------------------
+
+        price = product_info.get("price") or {}
+
+        item["formatted_price"] = (
+            price.get("formatted_price")
+            or ""
+        )
+
+        item["formatted_mrp"] = (
+            price.get("formatted_mrp")
+            or ""
+        )
+
+        item["discount"] = (
+            price.get("formatted_discount_percent")
+            or price.get("formatted_discount_rate")
+            or ""
+        )
+
+        # ---------------------------------------------------------
+        # Raw price
+        # ---------------------------------------------------------
 
         item["price"] = flt(
-            price_data.get("price_list_rate") or 0
+            price.get("price_list_rate")
+            or item.get("price")
+            or 0
         )
 
         item["currency"] = (
-            price_data.get("currency") or "KES"
+            price.get("currency")
+            or item.get("currency")
+            or "KES"
         )
+
+        # ---------------------------------------------------------
+        # Case size - custom Dalali field
+        # ---------------------------------------------------------
 
         item["case_size"] = int(
             frappe.db.get_value(
                 "Item",
-                item["item_code"],
+                item_code,
                 "custom_case_size"
             ) or 12
         )
+
+        # ---------------------------------------------------------
+        # URL
+        # ---------------------------------------------------------
 
         item["url"] = (
             f"/{item['route']}"

@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_bulk_edit": 1,
  "allow_rename": 1,
  "autoname": "field:section_id",
  "creation": "2026-06-08 21:41:40.813242",
@@ -11,7 +12,10 @@
   "source",
   "value",
   "limit",
-  "title"
+  "title",
+  "media_type",
+  "image",
+  "video"
  ],
  "fields": [
   {
@@ -22,8 +26,9 @@
   },
   {
    "fieldname": "source",
-   "fieldtype": "Data",
-   "label": "Source"
+   "fieldtype": "Select",
+   "label": "Source",
+   "options": "trending\nbest_sellers\nrecommended\ncategory\noffer\npromotion"
   },
   {
    "default": "0",
@@ -40,12 +45,29 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "video",
+   "fieldtype": "Attach",
+   "label": "Video",
+   "options": "video/*"
+  },
+  {
+   "fieldname": "media_type",
+   "fieldtype": "Select",
+   "label": "Media Type",
+   "options": "Image\nVideo"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-08 22:24:56.853161",
+ "modified": "2026-09-08 17:47:15.539139",
  "modified_by": "Administrator",
  "module": "Dt Ecommerce",
  "name": "Homepage Configuration Section",

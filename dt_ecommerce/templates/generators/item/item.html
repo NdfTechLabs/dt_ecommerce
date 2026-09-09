@@ -17,6 +17,10 @@ window.dalali_item_code = {{ dalali_item_code | tojson }};
 window.dalali_case_size = {{ dalali_case_size | default(12) | int }};
 </script>
 {% endif %}
+
+{% set show_recommended_items = recommended_items and shopping_cart.cart_settings.enable_recommendations %}
+	{% set info_col = 'col-9' if show_recommended_items else 'col-12' %}
+
 <div class="product-container item-main dalali-mode">
 	{% from "webshop/templates/includes/macros.html" import product_image %}
 	<div class="item-content">
@@ -50,8 +54,17 @@ window.dalali_case_size = {{ dalali_case_size | default(12) | int }};
 	</div>
 </div>
 
-<!-- Recommended Items — populated by dalali.js initPDPRecommended() -->
-<section id="dalali-pdp-recommended" class="dalali-pdp-recommended-section"></section>
+<!-- Recommended Items — populated -->
+	{% if show_recommended_items %}
+		<div class="dt-recommended-item-section">
+			<span class="dt-recommendation-header">{{ _("Recommended") }}</span>
+			<div class="dt-product-container dt-recommendation-container">
+				{% for item in recommended_items %}
+					{{ recommended_item_row(item) }}
+				{% endfor %}
+			</div>
+		</div>
+	{% endif %}
 {% endblock %}
 
 {% block base_scripts %}
