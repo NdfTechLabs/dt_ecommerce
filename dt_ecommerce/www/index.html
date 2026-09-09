@@ -4,90 +4,90 @@
 
 {% block page_content %}
 
-<!-- ═══════════════════════════════════════════════════════════
-     HERO + FILTER FORM WRAPPER
-     Single <form> spans the hero and the filter strip below
-     so all inputs (search + selects) submit together.
-═══════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════════
+        HERO + FILTER FORM WRAPPER
+        Single <form> spans the hero and the filter strip below
+        so all inputs (search + selects) submit together.
+    ═══════════════════════════════════════════════════════════ -->
 
-{% include "dt_ecommerce/templates/includes/hero/hero.html" %}
+    {% include "dt_ecommerce/templates/includes/hero/hero.html" %}
 
-<!-- /.dalali-matrix-form -->
+    <!-- /.dalali-matrix-form -->
 
-<!-- ═══════════════════════════════════════════════════════════
-     CATEGORY GRID SECTION
-═══════════════════════════════════════════════════════════ -->
-{% include "dt_ecommerce/templates/includes/category_grid/category_grid.html" %}
+    <!-- ═══════════════════════════════════════════════════════════
+        CATEGORY GRID SECTION
+    ═══════════════════════════════════════════════════════════ -->
+    {% include "dt_ecommerce/templates/includes/category_grid/category_grid.html" %}
 
-<!-- category grid -->
+    <!-- category grid -->
 
-{% if homepage_sections %}
+    {% if homepage_sections %}
 
-    {% for section in homepage_sections %}
+        {% for section in homepage_sections %}
 
-    <section
-        id="{{ section.section_id }}"
-        class="dalali-products-section {% if section.source == 'category' %}category{% endif %}"
-    >
+        <section
+            id="{{ section.section_id }}"
+            class="dalali-products-section {% if section.source == 'category' %}category{% endif %}"
+        >
 
-        <div class="container">
+            <div class="container">
 
-            {% if section.title %}
-            <div class="dalali-section-header">
-                <h2 class="dalali-section-title">
-                    {{ section.title }}
-                </h2>
+                {% if section.title %}
+                <div class="dalali-section-header">
+                    <h2 class="dalali-section-title">
+                        {{ section.title }}
+                    </h2>
+                </div>
+                {% endif %}
+
+                {% if section.source == "category" %}
+                <div
+                    data-item-group="{{ section.value }}"
+                    hidden
+                ></div>
+                {% endif %}
+
+                <div class="row dalali-product-grid">
+                    <!-- JS injects recommendation cards here -->
+                </div>
+
             </div>
-            {% endif %}
 
-            {% if section.source == "category" %}
-            <div
-                data-item-group="{{ section.value }}"
-                hidden
-            ></div>
-            {% endif %}
+        </section>
 
-            <div class="row dalali-product-grid">
-                <!-- JS injects recommendation cards here -->
-            </div>
+        {% endfor %}
 
-        </div>
+    {% endif %}
 
-    </section>
+    <!-- ═══════════════════════════════════════════════════════════
+        PROMOTIONAL BANNER / ANNOUNCEMENT STRIP
+    ═══════════════════════════════════════════════════════════ -->
 
-    {% endfor %}
+    {% include "dt_ecommerce/templates/includes/announcement_section/announcement_section.html" %}
 
-{% endif %}
+    <!-- /.dalali-announcement-section -->
 
-<!-- ═══════════════════════════════════════════════════════════
-     PROMOTIONAL BANNER / ANNOUNCEMENT STRIP
-═══════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════════
+        TIERED WHOLESALE PRICING PRODUCT CARDS
+    ═══════════════════════════════════════════════════════════ -->
+    {% if featured_products %}
 
-{% include "dt_ecommerce/templates/includes/announcement_section/announcement_section.html" %}
+    {% include "dt_ecommerce/templates/includes/featured_products/featured_products.html" %}
 
-<!-- /.dalali-announcement-section -->
+    <!-- /.dalali-products-section -->
+    {% endif %}
 
-<!-- ═══════════════════════════════════════════════════════════
-     TIERED WHOLESALE PRICING PRODUCT CARDS
-═══════════════════════════════════════════════════════════ -->
-{% if featured_products %}
+    <!-- ═══════════════════════════════════════════════════════════
+        CURATED WHOLESALE BUNDLES
+    ═══════════════════════════════════════════════════════════ -->
+    {% if wholesale_bundles %}
 
-{% include "dt_ecommerce/templates/includes/featured_products/featured_products.html" %}
+    {% include "dt_ecommerce/templates/includes/wholesale_bundles/wholesale_bundles.html" %}
+    <!-- /.dalali-bundles-section -->
+    {% endif %}
 
-<!-- /.dalali-products-section -->
-{% endif %}
-
-<!-- ═══════════════════════════════════════════════════════════
-     CURATED WHOLESALE BUNDLES
-═══════════════════════════════════════════════════════════ -->
-{% if wholesale_bundles %}
-
-{% include "dt_ecommerce/templates/includes/wholesale_bundles/wholesale_bundles.html" %}
-<!-- /.dalali-bundles-section -->
-{% endif %}
-
-<script>
-	window.HOMEPAGE_SECTIONS = {{ homepage_sections_json }};
-</script>
+    <script>
+        window.HOMEPAGE_SECTIONS = {{ homepage_sections_json }};
+    </script>
 
 {% endblock %}

@@ -1,1 +1,1 @@
-__version__ = "1.1.9" # fix: make the image fit the container and not overflow
+__version__ = "1.1.10" # fix: remove dalali code to its own app

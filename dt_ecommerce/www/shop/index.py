@@ -4,6 +4,7 @@ import json
 
 def get_context(context):
     context.no_cache = 0
+    context.full_width = 1        # remove Bootstrap container from <main> so hero spans full viewport
 
     slides = []
 

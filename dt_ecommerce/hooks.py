@@ -51,15 +51,12 @@ web_include_css = [
     "/assets/dt_ecommerce/css/base.css"        + _V,
     "/assets/dt_ecommerce/css/theme_glass.css" + _V,
     "/assets/dt_ecommerce/css/hero/index.css" + _V,
-    # "/assets/dt_ecommerce/css/theme_dalali.css" + _V,
 ]
 
 web_include_js = [
     "/assets/dt_ecommerce/js/theme.js"  + _V,
     "assets/dt_ecommerce/js/hero/index.js" + _V,
     "assets/dt_ecommerce/js/search/index.js" + _V,
-    # "/assets/dt_ecommerce/js/dalali.js" + _V,
-    # "/assets/dt_ecommerce/js/components/promo_bar.js" + _V,
 ]
 
 fixtures = [

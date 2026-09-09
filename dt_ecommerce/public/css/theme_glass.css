@@ -617,6 +617,11 @@ body {
 .item-card-group-section input[type="search"] {
   display: none !important;
 }
+.card-img{
+  object-fit: contain !important;
+  background-color: var(--surface-base);
+  margin-top:5px !important;
+}
 
 .dt-footer-bottom {
   display: flex;
