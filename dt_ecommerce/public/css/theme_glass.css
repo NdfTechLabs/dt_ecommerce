@@ -648,6 +648,7 @@ body {
     flex-direction: column;
     gap: var(--spacing-sm);
     justify-content: center;
+    align-items: center;
 
     padding: 16px;
     border: 1px solid transparent;
@@ -659,6 +660,8 @@ body {
         border-color 0.2s ease,
         box-shadow 0.2s ease,
         transform 0.2s ease;
+    max-width: 300px;
+
 }
 
 /* Card hover */
