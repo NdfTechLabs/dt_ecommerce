@@ -756,3 +756,19 @@ body {
   align-items: center;
   margin: var(--spacing-md);
 }
+.r-item-image {
+	width: 200px;
+	flex: 0 0 200px;
+	aspect-ratio: 1 / 1;
+}
+
+.r-product-image {
+	width: 100%;
+	height: 100%;
+}
+
+.r-product-image .website-image {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}

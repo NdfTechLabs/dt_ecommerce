@@ -8,9 +8,9 @@
 {% endmacro %}
 
 {% macro product_image(website_image, css_class="product-image", alt="", no_border=False) %}
-	<div class="{{ 'border' if not no_border else ''}} text-center rounded {{ css_class }}" style="overflow: hidden;">
+	<div class="{{ 'border' if not no_border else ''}} text-center rounded {{ css_class }}" style="overflow: hidden; aspect-ratio: 1 / 1;">
 		{% if website_image %}
-			<img itemprop="image" class="website-image h-100 w-100" alt="{{ _(alt) }}" src="{{ frappe.utils.quoted(website_image) | abs_url }}">
+			<img itemprop="image" class="website-image h-100 w-100" alt="{{ _(alt) }}" src="{{ frappe.utils.quoted(website_image) | abs_url }}"style="object-fit: contain;">
 		{% else %}
 			<div itemprop="image" class="card-img-top no-image-item">
 				{{ frappe.utils.get_abbr(alt) or "NA" }}

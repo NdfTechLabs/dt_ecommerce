@@ -1,1 +1,1 @@
-__version__ = "1.1.11" # fix: remove dalali code to its own app
+__version__ = "1.1.12" # fix: remove dalali code to its own app

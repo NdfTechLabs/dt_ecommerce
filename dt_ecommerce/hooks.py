@@ -45,7 +45,7 @@ required_apps = ["webshop"]
 
 # v=1.2 — bump this whenever CSS/JS changes to force all browsers to re-fetch
 # (Werkzeug ignores query strings for static files; browsers treat each ?v= as a new URL)
-_V = "?v=2.4"
+_V = "?v=2.6"
 
 web_include_css = [
     "/assets/dt_ecommerce/css/base.css"        + _V,
@@ -57,6 +57,7 @@ web_include_js = [
     "/assets/dt_ecommerce/js/theme.js"  + _V,
     "assets/dt_ecommerce/js/hero/index.js" + _V,
     "assets/dt_ecommerce/js/search/index.js" + _V,
+    "/assets/dt_ecommerce/js/utm.js" + _V,
 ]
 
 fixtures = [
@@ -227,6 +228,12 @@ doc_events = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "dt_ecommerce.event.get_events"
 # }
+
+override_whitelisted_methods = {
+    "webshop.webshop.shopping_cart.cart.create_lead_for_item_inquiry":
+        "dt_ecommerce.api.shopping_cart.create_lead_for_item_inquiry"
+}
+
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
