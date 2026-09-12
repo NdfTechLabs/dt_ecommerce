@@ -45,7 +45,7 @@ required_apps = ["webshop"]
 
 # v=1.2 — bump this whenever CSS/JS changes to force all browsers to re-fetch
 # (Werkzeug ignores query strings for static files; browsers treat each ?v= as a new URL)
-_V = "?v=2.8"
+_V = "?v=2.9"
 
 web_include_css = [
     "/assets/dt_ecommerce/css/base.css"        + _V,
