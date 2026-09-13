@@ -22,7 +22,7 @@
 	<tr data-name="{{ d.name }}">
 		<td style="width: 60%;">
 			<div class="d-flex">
-				<div class="cart-item-image mr-4">
+				<div class="cart-item-image mr-4 d-none d-md-block">
 					{% if d.thumbnail %}
 						{{ product_image(d.thumbnail, alt="d.web_item_name", no_border=True) }}
 					{% else %}
