@@ -234,6 +234,10 @@ override_whitelisted_methods = {
         "dt_ecommerce.api.shopping_cart.create_lead_for_item_inquiry"
 }
 
+override_doctype_class = {
+    "Mpesa Settings": "dt_ecommerce.overrides.mpesa_settings.CustomMpesaSettings"
+}
+
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
