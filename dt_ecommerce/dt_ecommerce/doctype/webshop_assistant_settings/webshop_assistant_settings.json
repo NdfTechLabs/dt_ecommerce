@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-09-15 21:51:53.104531",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "assistant_name",
+  "button_label",
+  "panel_title",
+  "greeting",
+  "assistant_icon",
+  "position",
+  "show_on_mobile",
+  "show_on_desktop",
+  "capabilities",
+  "channels"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled",
+   "reqd": 1
+  },
+  {
+   "fieldname": "assistant_name",
+   "fieldtype": "Data",
+   "label": "Assistant Name"
+  },
+  {
+   "fieldname": "button_label",
+   "fieldtype": "Data",
+   "label": "Button Label"
+  },
+  {
+   "fieldname": "panel_title",
+   "fieldtype": "Data",
+   "label": "Panel Title"
+  },
+  {
+   "fieldname": "greeting",
+   "fieldtype": "Data",
+   "label": "Greeting"
+  },
+  {
+   "fieldname": "assistant_icon",
+   "fieldtype": "Attach Image",
+   "label": "Assistant Icon"
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Select",
+   "label": "Position",
+   "options": "Bottom Right\nBottom Left"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_on_mobile",
+   "fieldtype": "Check",
+   "label": "Show on Mobile"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_on_desktop",
+   "fieldtype": "Check",
+   "label": "Show on Desktop"
+  },
+  {
+   "fieldname": "capabilities",
+   "fieldtype": "Table",
+   "label": "Capabilities",
+   "options": "Assistant Capability"
+  },
+  {
+   "fieldname": "channels",
+   "fieldtype": "Table",
+   "label": "Channels",
+   "options": "Assistant Channel"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-15 23:44:11.966564",
+ "modified_by": "Administrator",
+ "module": "Dt Ecommerce",
+ "name": "Webshop Assistant Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

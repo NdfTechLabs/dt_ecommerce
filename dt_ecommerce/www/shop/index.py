@@ -1,6 +1,7 @@
 import frappe
 import json
 
+from dt_ecommerce.api.assistant import load_assistant
 
 def get_context(context):
     context.no_cache = 0
@@ -121,5 +122,9 @@ def get_context(context):
     except Exception:
          context.homepage_sections = []
          context.homepage_sections_json = "[]"
+
+
+    context.assistant = load_assistant()
+    context.assistant_json = json.dumps(context.assistant)
 
     return context
