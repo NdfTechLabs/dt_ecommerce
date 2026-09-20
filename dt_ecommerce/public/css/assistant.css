@@ -419,233 +419,6 @@
 }
 
 
-/* =========================================================
-   PRODUCT SEARCH
-   ========================================================= */
-
-.dt-assistant-product-search {
-	position: relative;
-
-	display: flex;
-	align-items: center;
-
-	width: 100%;
-
-	margin-bottom: 18px;
-}
-
-.dt-assistant-product-search-icon {
-	position: absolute;
-	left: 13px;
-
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-
-	pointer-events: none;
-
-	opacity: 0.5;
-}
-
-.dt-assistant-product-search-input {
-	width: 100%;
-
-	height: 44px;
-
-	padding: 0 14px 0 42px;
-
-	border: 1px solid #dedede;
-	border-radius: 10px;
-
-	background: #ffffff;
-
-	font-size: 14px;
-
-	outline: none;
-
-	transition:
-		border-color 0.15s ease,
-		box-shadow 0.15s ease;
-}
-
-.dt-assistant-product-search-input::placeholder {
-	opacity: 0.55;
-}
-
-.dt-assistant-product-search-input:focus {
-	border-color: #999999;
-
-	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-}
-
-
-/* =========================================================
-   SEARCH RESULTS
-   ========================================================= */
-
-.dt-assistant-product-results {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-
-	margin-bottom: 18px;
-}
-
-.dt-assistant-loading {
-	padding: 16px;
-
-	text-align: center;
-
-	font-size: 13px;
-
-	opacity: 0.6;
-}
-
-
-/* =========================================================
-   POPULAR CATEGORIES
-   ========================================================= */
-
-.dt-assistant-popular {
-	margin-top: 4px;
-}
-
-.dt-assistant-category-grid {
-	display: grid;
-
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-
-	gap: 8px;
-}
-
-.dt-assistant-category {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	min-height: 42px;
-
-	padding: 9px 10px;
-
-	border: 1px solid #eeeeee;
-	border-radius: 9px;
-
-	background: #ffffff;
-
-	font-size: 13px;
-	font-weight: 500;
-
-	cursor: pointer;
-
-	transition:
-		background 0.15s ease,
-		border-color 0.15s ease,
-		transform 0.15s ease;
-}
-
-.dt-assistant-category:hover {
-	background: #f7f7f7;
-
-	border-color: #dddddd;
-
-	transform: translateY(-1px);
-}
-
-.dt-assistant-category:active {
-	transform: translateY(0);
-}
-
-
-/* =========================================================
-   BROWSE ALL
-   ========================================================= */
-
-.dt-assistant-browse-all {
-	width: 100%;
-
-	margin-top: 14px;
-
-	min-height: 42px;
-
-	padding: 10px 14px;
-
-	border: 1px solid #dddddd;
-	border-radius: 9px;
-
-	background: transparent;
-
-	font-size: 13px;
-	font-weight: 600;
-
-	cursor: pointer;
-
-	transition:
-		background 0.15s ease,
-		border-color 0.15s ease;
-}
-
-.dt-assistant-browse-all:hover {
-	background: #f7f7f7;
-	border-color: #cccccc;
-}
-
-
-/* =========================================================
-   ACCESSIBILITY / FOCUS
-   ========================================================= */
-
-.dt-assistant-back:focus-visible,
-.dt-assistant-category:focus-visible,
-.dt-assistant-browse-all:focus-visible {
-	outline: 2px solid currentColor;
-	outline-offset: 2px;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 767px) {
-
-	.dt-assistant-view-header {
-		margin-bottom: 16px;
-	}
-
-	.dt-assistant-view-title {
-		font-size: 16px;
-	}
-
-	.dt-assistant-view-subtitle {
-		font-size: 12px;
-	}
-
-	.dt-assistant-product-search-input {
-		height: 46px;
-
-		font-size: 14px;
-	}
-
-	.dt-assistant-category {
-		min-height: 44px;
-	}
-
-	.dt-assistant-browse-all {
-		min-height: 44px;
-	}
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 380px) {
-
-	.dt-assistant-category-grid {
-		grid-template-columns: 1fr;
-	}
-}
 
 /* =========================================================
    PRODUCT HELP RESULTS
@@ -670,208 +443,6 @@
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 }
-
-
-/* =========================================================
-   CATEGORY RESULTS
-   ========================================================= */
-
-.dt-assistant-category-results {
-	display: flex;
-	flex-direction: column;
-
-	border: 1px solid #e5e7eb;
-	border-radius: 10px;
-
-	overflow: hidden;
-	background: #fff;
-}
-
-.dt-assistant-result-category {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	min-height: 42px;
-	padding: 10px 12px;
-
-	color: #1f2937;
-	text-decoration: none;
-
-	font-size: 13px;
-	font-weight: 500;
-
-	background: #fff;
-
-	transition:
-		background-color 0.15s ease,
-		color 0.15s ease;
-}
-
-.dt-assistant-result-category + .dt-assistant-result-category {
-	border-top: 1px solid #f0f1f3;
-}
-
-.dt-assistant-result-category:hover {
-	background: #f8fafc;
-	color: #111827;
-	text-decoration: none;
-}
-
-.dt-assistant-result-category:active {
-	background: #f1f5f9;
-}
-
-
-/* Category arrow
-   --------------------------------------------------------- */
-
-.dt-assistant-result-arrow {
-	flex: 0 0 auto;
-
-	margin-left: 10px;
-
-	font-size: 18px;
-	line-height: 1;
-
-	color: #9ca3af;
-
-	transition:
-		transform 0.15s ease,
-		color 0.15s ease;
-}
-
-.dt-assistant-result-category:hover
-.dt-assistant-result-arrow,
-.dt-assistant-product-result:hover
-.dt-assistant-result-arrow {
-	color: #4b5563;
-	transform: translateX(2px);
-}
-
-
-/* =========================================================
-   PRODUCT LIST
-   ========================================================= */
-
-.dt-assistant-product-list {
-	display: flex;
-	flex-direction: column;
-
-	gap: 6px;
-}
-
-
-/* Product result
-   --------------------------------------------------------- */
-
-.dt-assistant-product-result {
-	display: flex;
-	align-items: center;
-
-	min-height: 64px;
-	padding: 7px 8px;
-
-	border: 1px solid #e5e7eb;
-	border-radius: 10px;
-
-	background: #fff;
-
-	color: inherit;
-	text-decoration: none;
-
-	transition:
-		border-color 0.15s ease,
-		background-color 0.15s ease,
-		box-shadow 0.15s ease;
-}
-
-.dt-assistant-product-result:hover {
-	background: #fafafa;
-	border-color: #d1d5db;
-
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-
-	color: inherit;
-	text-decoration: none;
-}
-
-.dt-assistant-product-result:active {
-	background: #f5f5f5;
-	box-shadow: none;
-}
-
-
-/* Product image
-   --------------------------------------------------------- */
-
-.dt-assistant-product-result-image {
-	flex: 0 0 48px;
-
-	width: 48px;
-	height: 48px;
-
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	margin-right: 10px;
-
-	border-radius: 7px;
-
-	background: #f8f8f8;
-
-	overflow: hidden;
-}
-
-.dt-assistant-product-result-image img {
-	display: block;
-
-	width: 100%;
-	height: 100%;
-
-	object-fit: contain;
-}
-
-
-/* Product content
-   --------------------------------------------------------- */
-
-.dt-assistant-product-result-content {
-	flex: 1 1 auto;
-	min-width: 0;
-
-	display: flex;
-	flex-direction: column;
-
-	gap: 3px;
-}
-
-.dt-assistant-product-result-name {
-	overflow: hidden;
-
-	font-size: 13px;
-	font-weight: 600;
-	line-height: 1.35;
-
-	color: #1f2937;
-
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dt-assistant-product-result-group {
-	overflow: hidden;
-
-	font-size: 11px;
-	line-height: 1.3;
-
-	color: #9ca3af;
-
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 
 /* =========================================================
    NO RESULTS
@@ -904,20 +475,332 @@
 	color: #9ca3af;
 }
 
-
 /* =========================================================
-   LOADING
+   CAPABILITY HELP VIEW
    ========================================================= */
 
-.dt-assistant-loading {
+.dt-assistant-capability-help {
+	width: 100%;
+}
+
+
+/* =========================================================
+   VIEW HEADER
+   ========================================================= */
+
+.dt-assistant-view-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.dt-assistant-back {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: inherit;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0.7;
+	transition:
+		background 0.15s ease,
+		opacity 0.15s ease,
+		transform 0.15s ease;
+}
+
+.dt-assistant-back:hover {
+	background: #f3f3f3;
+	opacity: 1;
+}
+
+.dt-assistant-back:active {
+	transform: scale(0.94);
+}
+
+.dt-assistant-view-title {
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.dt-assistant-view-subtitle {
+	margin-top: 3px;
+	font-size: 13px;
+	line-height: 1.45;
+	color: #6b7280;
+}
+
+
+/* =========================================================
+   HELP SECTIONS
+   ========================================================= */
+
+.dt-assistant-help-section {
+	margin-top: 20px;
+}
+
+.dt-assistant-help-section:first-of-type {
+	margin-top: 0;
+}
+
+
+/* =========================================================
+   ARTICLE LIST
+   ========================================================= */
+
+.dt-assistant-article-list {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.dt-assistant-article {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #eeeeee;
+	border-radius: 10px;
+	background: #ffffff;
+	color: inherit;
+	text-decoration: none;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.dt-assistant-article:hover {
+	background: #f8f8f8;
+	border-color: #dddddd;
+	color: inherit;
+	text-decoration: none;
+	transform: translateY(-1px);
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dt-assistant-article:active {
+	transform: translateY(0);
+}
+
+.dt-assistant-article-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.dt-assistant-article-title {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #222222;
+}
+
+.dt-assistant-article-description {
+	margin-top: 3px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #8a8a8a;
+
+	/* Keep long descriptions from making the panel huge */
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+
+/* =========================================================
+   ACTION LIST
+   ========================================================= */
+
+.dt-assistant-action-list {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.dt-assistant-action {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #eeeeee;
+	border-radius: 10px;
+	background: #ffffff;
+	color: inherit;
+	text-decoration: none;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.dt-assistant-action:hover {
+	background: #f8f8f8;
+	border-color: #dddddd;
+	color: inherit;
+	text-decoration: none;
+	transform: translateY(-1px);
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dt-assistant-action:active {
+	transform: translateY(0);
+}
+
+
+/* =========================================================
+   ACTION ICON
+   ========================================================= */
+
+.dt-assistant-action-icon {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 9px;
+	background: #f3f3f3;
+	color: #555555;
+	font-size: 17px;
+}
+
+.dt-assistant-action-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.dt-assistant-action-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.dt-assistant-action-title {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #222222;
+}
+
+.dt-assistant-action-description {
+	margin-top: 3px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #8a8a8a;
+
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+
+/* =========================================================
+   RESULT ARROW
+   ========================================================= */
+
+.dt-assistant-result-arrow {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 1;
+	color: #aaaaaa;
+	transition:
+		color 0.15s ease,
+		transform 0.15s ease;
+}
+
+.dt-assistant-article:hover .dt-assistant-result-arrow,
+.dt-assistant-action:hover .dt-assistant-result-arrow {
+	color: #555555;
+	transform: translateX(2px);
+}
+
+
+/* =========================================================
+   AI ENTRY
+   ========================================================= */
+
+.dt-assistant-ai-entry {
+	margin-top: 22px;
+	padding-top: 18px;
+	border-top: 1px solid #eeeeee;
+}
+
+.dt-assistant-ai-button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	width: 100%;
+	min-height: 42px;
+	padding: 10px 14px;
+	border: 1px solid #dddddd;
+	border-radius: 10px;
+	background: #ffffff;
+	color: #333333;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		box-shadow 0.15s ease,
+		transform 0.15s ease;
+}
 
-	min-height: 70px;
+.dt-assistant-ai-button:hover {
+	background: #f8f8f8;
+	border-color: #cccccc;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
 
+.dt-assistant-ai-button:active {
+	transform: scale(0.98);
+}
+
+
+/* =========================================================
+   NO HELP AVAILABLE
+   ========================================================= */
+
+.dt-assistant-no-results {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 36px 18px;
+	text-align: center;
+}
+
+.dt-assistant-no-results-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: #374151;
+}
+
+.dt-assistant-no-results-text {
+	max-width: 260px;
+	margin-top: 6px;
 	font-size: 12px;
-
+	line-height: 1.5;
 	color: #9ca3af;
 }
 
@@ -928,24 +811,27 @@
 
 @media (max-width: 767px) {
 
-	.dt-assistant-product-result {
-		min-height: 68px;
-		padding: 8px;
+	.dt-assistant-help-section {
+		margin-top: 18px;
 	}
 
-	.dt-assistant-product-result-image {
-		flex-basis: 50px;
-
-		width: 50px;
-		height: 50px;
+	.dt-assistant-article,
+	.dt-assistant-action {
+		padding: 11px;
 	}
 
-	.dt-assistant-product-result-name {
+	.dt-assistant-action-icon {
+		width: 34px;
+		height: 34px;
+	}
+
+	.dt-assistant-article-title,
+	.dt-assistant-action-title {
 		font-size: 13px;
 	}
 
-	.dt-assistant-result-category {
-		min-height: 46px;
-		padding: 11px 12px;
+	.dt-assistant-ai-entry {
+		margin-top: 20px;
+		padding-top: 16px;
 	}
 }

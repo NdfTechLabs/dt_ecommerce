@@ -3,6 +3,7 @@
 
 # import frappe
 from frappe.model.document import Document
+import frappe
 
 
 class WebshopAssistantSettings(Document):
@@ -45,21 +46,67 @@ class WebshopAssistantSettings(Document):
 		}
 
 	def _get_capabilities(self):
-		return [
-			{
+		capabilities = []
+
+		for capability in self.capabilities:
+			if not capability.enabled:
+				continue
+
+			capabilities.append({
 				"key": capability.capability,
 				"enabled": capability.enabled,
 				"description": capability.description,
 				"icon": capability.icon,
 				"display_order": capability.display_order,
-			}
-			for capability in self.capabilities
-			if capability.enabled
-		]
+				"ai_enabled": capability.ai_enabled,
+				"actions": self._get_actions(capability.capability),
+				"articles": self._get_articles(capability.capability),
+			})
+
+		return sorted(
+			capabilities,
+			key=lambda item: item.get("display_order") or 0
+		)
+
+	def _get_actions(self, capability):
+		return frappe.get_all(
+			"Assistant Action",
+			filters={
+				"capability": capability,
+				"enabled": 1,
+			},
+			fields=[
+				"action",
+				"label",
+				"description",
+				"link",
+				"icon",
+				"display_order",
+			],
+			order_by="display_order asc",
+		)
+
+	def _get_articles(self, capability):
+		return frappe.get_all(
+			"Assistant Article",
+			filters={
+				"capability": capability,
+				"enabled": 1,
+			},
+			fields=[
+				"name",
+				"title",
+				"article",
+				"description",
+				"display_order",
+			],
+			order_by="display_order asc",
+		)
 
 	def _get_channels(self):
 		return [
 			{
+				"channel": channel.channel,
 				"key": channel.channel,
 				"enabled": channel.enabled,
 				"label": channel.label,

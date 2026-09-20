@@ -382,33 +382,6 @@ function createChannelItem(channel) {
 	return button;
 }
 
-function handleCapability(capability,config) {
- 
-	if (!capability || !capability.key) {
-		return;
-	}
-
-	switch (capability.key) {
-		case "Product Help":
-			openProductHelp(capability,config);
-			break;
-
-		case "Order Help":
-			openOrderTracking(capability);
-			break;
-
-		case "Delivery Help":
-			openDeliveryHelp(capability);
-			break;
-
-		default:
-			console.warn(
-				"Unsupported assistant capability:",
-				capability.key
-			);
-	}
-}
-
 function renderAssistantHome() {
 	const config = window.DT_ASSISTANT;
 
@@ -559,13 +532,8 @@ function renderAssistantHome() {
 	}
 }
 
-function openProductHelp(capability,config) {
-	console.log("Product Help", capability);
-
-	config.ui.active_capability = "product_help";
-	config.ui.view = "product_help";
-
-	renderProductHelp();
+function handleCapability(capability) {
+	renderCapabilityHelp(capability);
 }
 
 function closeProductHelp() {
@@ -586,7 +554,7 @@ function closeProductHelp() {
 }
 
 
-function renderProductHelp() {
+function renderCapabilityHelp(capability) {
 	const panel = document.getElementById("dt-assistant-panel");
 
 	if (!panel) {
@@ -599,10 +567,14 @@ function renderProductHelp() {
 		return;
 	}
 
+	const articles = capability.articles || [];
+	const actions = capability.actions || [];
+
 	body.innerHTML = `
-		<div class="dt-assistant-view dt-assistant-product-help">
+		<div class="dt-assistant-view dt-assistant-capability-help">
 
 			<div class="dt-assistant-view-header">
+
 				<button
 					type="button"
 					class="dt-assistant-back"
@@ -613,324 +585,292 @@ function renderProductHelp() {
 
 				<div>
 					<div class="dt-assistant-view-title">
-						Product Help
+						${escapeHtml(capability.label || capability.key)}
 					</div>
 
-					<div class="dt-assistant-view-subtitle">
-						What are you looking for?
-					</div>
-				</div>
-			</div>
-
-			<div class="dt-assistant-product-search">
-				<span class="dt-assistant-product-search-icon">
-					<svg
-						viewBox="0 0 24 24"
-						width="18"
-						height="18"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="11" cy="11" r="7"></circle>
-						<path d="m20 20-4-4"></path>
-					</svg>
-				</span>
-
-				<input
-					type="search"
-					class="dt-assistant-product-search-input"
-					placeholder="Search products..."
-					autocomplete="off"
-				>
-			</div>
-
-			<div class="dt-assistant-product-results"></div>
-
-			<div class="dt-assistant-popular">
-				<div class="dt-assistant-section-title">
-					Popular categories
+					${
+						capability.description
+							? `
+								<div class="dt-assistant-view-subtitle">
+									${escapeHtml(capability.description)}
+								</div>
+							`
+							: ""
+					}
 				</div>
 
-				<div class="dt-assistant-category-grid">
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Wine"
-					>
-						Wine
-					</button>
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Whisky"
-					>
-						Whisky
-					</button>
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Vodka"
-					>
-						Vodka
-					</button>
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Gin"
-					>
-						Gin
-					</button>
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Cognac"
-					>
-						Cognac
-					</button>
-
-					<button
-						type="button"
-						class="dt-assistant-category"
-						data-item-group="Tequila"
-					>
-						Tequila
-					</button>
-
-				</div>
 			</div>
 
-			<button
-				type="button"
-				class="dt-assistant-browse-all"
-			>
-				Browse all products
-			</button>
+
+			${
+				articles.length
+					? `
+						<div class="dt-assistant-help-section">
+
+							<div class="dt-assistant-section-title">
+								Help
+							</div>
+
+							<div class="dt-assistant-article-list">
+
+								${articles
+									.map(
+										(article) => `
+											<a
+												href="/helpdesk/kb/articles/${article.article}"
+												class="dt-assistant-article"
+											>
+
+												<div class="dt-assistant-article-content">
+
+													<div class="dt-assistant-article-title">
+														${escapeHtml(article.title)}
+													</div>
+
+													${
+														article.description
+															? `
+																<div class="dt-assistant-article-description">
+																	${escapeHtml(article.description)}
+																</div>
+															`
+															: ""
+													}
+
+												</div>
+
+												<span class="dt-assistant-result-arrow">
+													›
+												</span>
+
+											</a>
+										`
+									)
+									.join("")}
+
+							</div>
+
+						</div>
+					`
+					: ""
+			}
+
+
+			${
+				actions.length
+					? `
+						<div class="dt-assistant-help-section">
+
+							<div class="dt-assistant-section-title">
+								What would you like to do?
+							</div>
+
+							<div class="dt-assistant-action-list">
+
+								${actions
+									.map(
+										(action) => `
+											<a
+												href="${action.link}"
+												class="dt-assistant-action"
+											>
+
+												${
+													action.icon
+														? `
+															<span class="dt-assistant-action-icon">
+																${action.icon}
+															</span>
+														`
+														: ""
+												}
+
+												<div class="dt-assistant-action-content">
+
+													<div class="dt-assistant-action-title">
+														${escapeHtml(action.label)}
+													</div>
+
+													${
+														action.description
+															? `
+																<div class="dt-assistant-action-description">
+																	${escapeHtml(action.description)}
+																</div>
+															`
+															: ""
+													}
+
+												</div>
+
+												<span class="dt-assistant-result-arrow">
+													›
+												</span>
+
+											</a>
+										`
+									)
+									.join("")}
+
+							</div>
+
+						</div>
+					`
+					: ""
+			}
+
+
+			${
+				capability.ai_enabled
+					? `
+						<div class="dt-assistant-ai-entry">
+
+							<button
+								type="button"
+								class="dt-assistant-ai-button"
+								data-capability="${escapeHtml(capability.key)}"
+							>
+								Ask ${escapeHtml(
+									window.DT_ASSISTANT?.assistant_name || "Assistant"
+								)}
+							</button>
+
+						</div>
+					`
+					: ""
+			}
+
+
+			${
+				!articles.length &&
+				!actions.length &&
+				!capability.ai_enabled
+					? `
+						<div class="dt-assistant-no-results">
+
+							<div class="dt-assistant-no-results-title">
+								No help available
+							</div>
+
+							<div class="dt-assistant-no-results-text">
+								There is currently no help available for this topic.
+							</div>
+
+						</div>
+					`
+					: ""
+			}
 
 		</div>
 	`;
-  let button = document.querySelector(".dt-assistant-back")
- 	button.addEventListener("click", () => {
-   renderAssistantHome();
-  });
-  let searchInput = document.querySelector(".dt-assistant-product-search-input")
-  searchInput.addEventListener("keyup",(evt)=>{
-   if(evt.target.value!==""){
-    searchAssistantProducts(evt.target.value,body)
-   }else{
-			  body.querySelector(
-      ".dt-assistant-product-results"
-     ).innerHTML="";
-   }
-  })
 
-
-	// bindProductHelpEvents(body);
+	bindCapabilityHelpEvents(body);
 }
 
 
-function searchAssistantProducts(
-	query,
-	container,
-	options = {}
-) {
-	const results = container.querySelector(
-		".dt-assistant-product-results"
-	);
+function bindCapabilityHelpEvents(container) {
+	const backButton = container.querySelector(".dt-assistant-back");
 
-	if (!results) {
-		return;
-	}
+	backButton?.addEventListener("click", () => {
+		renderAssistantHome();
+	});
 
-	results.innerHTML = `
-		<div class="dt-assistant-loading">
-			Searching...
-		</div>
-	`;
+	const aiButton = container.querySelector(".dt-assistant-ai-button");
 
-	frappe.call({
-		method: "webshop.templates.pages.product_search.search",
+	aiButton?.addEventListener("click", () => {
+		const capabilityKey = aiButton.dataset.capability;
 
-		args: {
-			query: query,
-		},
+		console.log("AI assistant requested:", capabilityKey);
 
-		callback: (res) => {
-			const data = res.message || {};
-
-			renderProductHelpResults(
-				data.product_results || [],
-				data.category_results || [],
-				results
-			);
-		},
+		// AI machine will be implemented later.
 	});
 }
 
-function renderProductHelpResults(
-	products = [],
-	categories = [],
-	container
-) {
-	if (!container) {
+
+function escapeHtml(value) {
+	const div = document.createElement("div");
+
+	div.textContent = value ?? "";
+
+	return div.innerHTML;
+}
+
+function handleChannel(channel) {
+	
+	if (!channel || !channel.enabled) {
 		return;
 	}
 
-	let html = "";
+	switch (channel.channel) {
+		case "whatsapp":
+			openWhatsApp(channel);
+			break;
 
-	/*
-	 * Categories
-	 */
+		case "web_chat":
+			openWebChat(channel);
+			break;
 
-	if (categories.length) {
-		html += `
-			<div class="dt-assistant-results-section">
+		default:
+			console.warn(
+				"Unsupported assistant channel:",
+				channel.channel
+			);
+	}
+}
 
-				<div class="dt-assistant-section-title">
-					Categories
-				</div>
-
-				<div class="dt-assistant-category-results">
-
-					${categories.map((category) => `
-						<a
-							href="/${category.route}"
-							class="dt-assistant-result-category"
-						>
-							<span>
-								${category.name}
-							</span>
-
-							<span class="dt-assistant-result-arrow">
-								›
-							</span>
-						</a>
-					`).join("")}
-
-				</div>
-
-			</div>
-		`;
+function openWhatsApp(channel) {
+	if (!channel.contact) {
+		console.warn("WhatsApp channel has no contact configured.");
+		return;
 	}
 
 	/*
-	 * Products
+	 * Configuration example:
+	 *
+	 * https://wa.me/{contact}
 	 */
 
-	if (products.length) {
-		html += `
-			<div class="dt-assistant-results-section">
+	let url = channel.configuration;
 
-				<div class="dt-assistant-section-title">
-					Products
-				</div>
-
-				<div class="dt-assistant-product-list">
-
-					${products.map((product) => `
-						<a
-							href="/${product.route}"
-							class="dt-assistant-product-result"
-							data-item-code="${product.item_code}"
-						>
-
-							<div class="dt-assistant-product-result-image">
-								<img
-									src="${
-										product.thumbnail ||
-										product.website_image ||
-										"/assets/webshop/images/cart-empty-state.png"
-									}"
-									alt="${product.web_item_name || ""}"
-								>
-							</div>
-
-							<div class="dt-assistant-product-result-content">
-
-								<div class="dt-assistant-product-result-name">
-									${product.web_item_name || product.item_code}
-								</div>
-
-								${product.item_group ? `
-									<div class="dt-assistant-product-result-group">
-										${product.item_group}
-									</div>
-								` : ""}
-
-							</div>
-
-							<div class="dt-assistant-result-arrow">
-								›
-							</div>
-
-						</a>
-					`).join("")}
-
-				</div>
-
-			</div>
-		`;
+	if (!url) {
+		url = "https://wa.me/{contact}";
 	}
 
 	/*
-	 * No results
-	 */
-
-	if (!products.length && !categories.length) {
-		html = `
-			<div class="dt-assistant-no-results">
-				<div class="dt-assistant-no-results-title">
-					No products found
-				</div>
-
-				<div class="dt-assistant-no-results-text">
-					Try a different product name or search term.
-				</div>
-			</div>
-		`;
-	}
-
-	container.innerHTML = html;
-}
-
-
-function openOrderTracking(capability) {
-	console.log("Order Tracking", capability);
-
-	/*
-	 * Order Tracking machine will go here.
-	 */
-}
-
-
-function openDeliveryHelp(capability) {
-	console.log("Delivery Help", capability);
-
-	/*
-	 * Delivery Help machine will go here.
-	 */
-}
-
-
-
-function handleChannel(channel) {
-	console.log("Assistant channel selected:", channel);
-
-	/*
-	 * Channel handlers will be connected here.
+	 * Normalize the phone number.
 	 *
 	 * Example:
+	 * 0728583967
 	 *
-	 * whatsapp
-	 * web_chat
+	 * becomes:
+	 * 254728583967
 	 */
+
+	let phone = String(channel.contact)
+		.replace(/\D/g, "");
+
+	if (phone.startsWith("0")) {
+		phone = "254" + phone.substring(1);
+	}
+
+	url = url.replace(
+		"{contact}",
+		phone
+	);
+
+	window.open(
+		url,
+		"_blank",
+		"noopener,noreferrer"
+	);
 }
 
+
+function openWebChat(channel) {
+	console.log("Web chat channel selected:", channel);
+
+	// Web chat implementation will come later.
+}
 
 function formatAssistantLabel(key) {
 	if (!key) {

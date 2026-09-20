@@ -14,12 +14,13 @@ class AssistantCapability(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		capability: DF.Literal["Product Help", "Order Help", "Delivery Help", "AI Assistant"]
+		ai_enabled: DF.Check
+		capability: DF.Link
+		capability_name: DF.Data | None
 		description: DF.SmallText | None
 		display_order: DF.Int
 		enabled: DF.Check
 		icon: DF.Data | None
-		name: DF.Int | None
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

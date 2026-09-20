@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class AssistantChannel(Document):
+class AssistantArticle(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,18 +14,12 @@ class AssistantChannel(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		channel: DF.Literal["whatsapp", "web_chat"]
-		channel_name: DF.Data
-		configuration: DF.Code | None
-		contact: DF.Data | None
+		article: DF.Link
+		capability: DF.Link | None
 		description: DF.SmallText | None
 		display_order: DF.Int
 		enabled: DF.Check
-		icon: DF.Data | None
-		label: DF.Data | None
-		parent: DF.Data
-		parentfield: DF.Data
-		parenttype: DF.Data
+		title: DF.Data
 	# end: auto-generated types
 
 	pass

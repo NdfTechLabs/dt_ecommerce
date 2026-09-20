@@ -2,25 +2,27 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "autoincrement",
+ "autoname": "field:capability_name",
  "creation": "2026-09-15 21:45:39.220150",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "capability_name",
   "capability",
   "enabled",
   "description",
   "icon",
-  "display_order"
+  "display_order",
+  "ai_enabled"
  ],
  "fields": [
   {
    "fieldname": "capability",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Capability",
-   "options": "Product Help\nOrder Help\nDelivery Help\nAI Assistant",
+   "options": "HD Article Category",
    "reqd": 1
   },
   {
@@ -45,17 +47,30 @@
    "fieldname": "display_order",
    "fieldtype": "Int",
    "label": "Display Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "ai_enabled",
+   "fieldtype": "Check",
+   "label": "AI enabled"
+  },
+  {
+   "fieldname": "capability_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Capability name",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-09-15 21:50:00.297527",
+ "modified": "2026-09-18 13:47:05.073096",
  "modified_by": "Administrator",
  "module": "Dt Ecommerce",
  "name": "Assistant Capability",
- "naming_rule": "Autoincrement",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
