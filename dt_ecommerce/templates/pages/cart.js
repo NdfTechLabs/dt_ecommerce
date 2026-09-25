@@ -22,9 +22,18 @@ $.extend(shopping_cart, {
 	},
 
 	bind_place_order: function() {
-		$(".btn-place-order").on("click", function() {
-			shopping_cart.place_order(this);
-		});
+					$(".btn-place-order").on("click", function(e) {
+
+									const button = this;
+
+									Promise.resolve(shopping_cart.place_order(button))
+													.catch((error) => {
+																	console.error("Place order failed:", error);
+													})
+													.finally(() => {
+																shopping_cart.unfreeze();
+													});
+					});
 	},
 
 	bind_request_quotation: function() {
@@ -141,12 +150,13 @@ $.extend(shopping_cart, {
 
 	place_order: function(btn) {
 		shopping_cart.freeze();
-
+		
 		return frappe.call({
 			type: "POST",
 			method: "webshop.webshop.shopping_cart.cart.place_order",
 			btn: btn,
 			callback: function(r) {
+				
 				if(r.exc) {
 					shopping_cart.unfreeze();
 					var msg = "";
