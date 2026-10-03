@@ -45,13 +45,14 @@ required_apps = ["webshop"]
 
 # v=1.2 — bump this whenever CSS/JS changes to force all browsers to re-fetch
 # (Werkzeug ignores query strings for static files; browsers treat each ?v= as a new URL)
-_V = "?v=2.14"
+_V = "?v=2.16"
 
 web_include_css = [
     "/assets/dt_ecommerce/css/base.css"        + _V,
     "/assets/dt_ecommerce/css/theme_glass.css" + _V,
     "/assets/dt_ecommerce/css/hero/index.css" + _V,
     "/assets/dt_ecommerce/css/assistant.css" + _V,
+    "/assets/dt_ecommerce/css/customer_account.css" + _V,
 ]
 
 web_include_js = [
@@ -60,6 +61,9 @@ web_include_js = [
     "assets/dt_ecommerce/js/search/index.js" + _V,
     "/assets/dt_ecommerce/js/utm.js" + _V,
     "/assets/dt_ecommerce/js/assistant.js" + _V,
+    "/assets/dt_ecommerce/js/account_migration.js"+ _V,
+    "/assets/dt_ecommerce/js/customer_account.js"+ _V,
+    "/assets/dt_ecommerce/js/customer_auth_prompt.js"+ _V,
 ]
 
 fixtures = [
@@ -190,6 +194,7 @@ doc_events = {
     },
 }
 
+
 # Scheduled Tasks
 # ---------------
 
@@ -223,6 +228,15 @@ doc_events = {
 # extend_doctype_class = {
 # 	"Task": "dt_ecommerce.custom.task.CustomTaskMixin"
 # }
+
+extend_doctype_class = {
+    "User": [
+        "dt_ecommerce.extensions.user.CustomerUserMixin"
+    ],
+    "Customer": [
+        "dt_ecommerce.extensions.customer.CustomerMixin"
+    ],
+}
 
 # Overriding Methods
 # ------------------------------

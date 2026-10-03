@@ -6,3 +6,4 @@
 # Patches added in this section will be executed after doctypes are migrated
 
 dt_ecommerce.patches.v1_2.add_storefront_hero_fields
+dt_ecommerce.patches.v1_1.add_address_location_fields

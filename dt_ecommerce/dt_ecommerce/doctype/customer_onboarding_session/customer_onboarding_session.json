@@ -1,0 +1,106 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:token",
+ "creation": "2026-10-02 19:43:18.136475",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "token",
+  "customer",
+  "verification_id",
+  "identifier_type",
+  "identifier_hash",
+  "signup_email",
+  "user",
+  "status",
+  "expires_at",
+  "completed_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "verification_id",
+   "fieldtype": "Data",
+   "label": "Verification Id"
+  },
+  {
+   "fieldname": "identifier_type",
+   "fieldtype": "Select",
+   "label": "Identifier Type",
+   "options": "Email\nMobile Number\nCustomer ID"
+  },
+  {
+   "fieldname": "identifier_hash",
+   "fieldtype": "Data",
+   "label": "Identifier Hash"
+  },
+  {
+   "fieldname": "signup_email",
+   "fieldtype": "Data",
+   "label": "Sign up Email"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nSignup\nCompleted\nExpired\nCancelled"
+  },
+  {
+   "fieldname": "expires_at",
+   "fieldtype": "Datetime",
+   "label": "Expires at"
+  },
+  {
+   "fieldname": "completed_at",
+   "fieldtype": "Datetime",
+   "label": "Completed at"
+  },
+  {
+   "fieldname": "token",
+   "fieldtype": "Data",
+   "label": "Token",
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-02 20:07:46.427772",
+ "modified_by": "Administrator",
+ "module": "Dt Ecommerce",
+ "name": "Customer Onboarding Session",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

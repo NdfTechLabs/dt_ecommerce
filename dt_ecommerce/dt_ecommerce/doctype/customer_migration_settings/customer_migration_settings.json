@@ -1,0 +1,153 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-10-02 02:09:23.835064",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_uuys",
+  "enabled",
+  "section_break_customer_matching",
+  "match_by_mobile_number",
+  "match_by_email",
+  "match_by_customer_id",
+  "section_break_verification",
+  "otp_enabled",
+  "otp_expiry",
+  "maximum_attempts",
+  "section_break_migration_requirements",
+  "require_email",
+  "require_phone",
+  "require_address",
+  "section_break_user",
+  "user_type",
+  "auto_enable_user"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_uuys",
+   "fieldtype": "Section Break",
+   "label": "General"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "section_break_customer_matching",
+   "fieldtype": "Section Break",
+   "label": "Customer Matching"
+  },
+  {
+   "fieldname": "section_break_verification",
+   "fieldtype": "Section Break",
+   "label": "Verification"
+  },
+  {
+   "default": "0",
+   "fieldname": "otp_enabled",
+   "fieldtype": "Check",
+   "label": "OTP enabled"
+  },
+  {
+   "description": "In minutes",
+   "fieldname": "otp_expiry",
+   "fieldtype": "Int",
+   "label": "OTP expiry",
+   "options": "5"
+  },
+  {
+   "fieldname": "maximum_attempts",
+   "fieldtype": "Int",
+   "label": "Maximum attempts",
+   "options": "5"
+  },
+  {
+   "fieldname": "section_break_migration_requirements",
+   "fieldtype": "Section Break",
+   "label": "Migration Requirements"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_email",
+   "fieldtype": "Check",
+   "label": "Require email"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_phone",
+   "fieldtype": "Check",
+   "label": "Require phone"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_address",
+   "fieldtype": "Check",
+   "label": "Require address"
+  },
+  {
+   "fieldname": "section_break_user",
+   "fieldtype": "Section Break",
+   "label": "User"
+  },
+  {
+   "fieldname": "user_type",
+   "fieldtype": "Select",
+   "label": "User Type",
+   "options": "Website User\nSystem User"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_enable_user",
+   "fieldtype": "Check",
+   "label": "Auto-enable User"
+  },
+  {
+   "default": "0",
+   "fieldname": "match_by_mobile_number",
+   "fieldtype": "Check",
+   "label": "Match by Mobile Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "match_by_email",
+   "fieldtype": "Check",
+   "label": "Match by Email"
+  },
+  {
+   "default": "0",
+   "fieldname": "match_by_customer_id",
+   "fieldtype": "Check",
+   "label": "Match by Customer ID"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-02 12:54:56.266952",
+ "modified_by": "Administrator",
+ "module": "Dt Ecommerce",
+ "name": "Customer Migration Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

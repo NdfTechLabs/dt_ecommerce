@@ -1,0 +1,1101 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+
+<div class="container py-5">
+
+    {% if action == "login" %}
+
+        <div class="customer-access text-center">
+            <h2>Sign in to continue</h2>
+
+            <p class="text-muted">
+                {{ message }}
+            </p>
+
+            <a
+                href="{{ login_url }}"
+                class="btn btn-primary"
+            >
+                Sign in
+            </a>
+        </div>
+
+    {% elif action == "signup" %}
+
+        <div class="customer-access text-center">
+            <h2>Create your account</h2>
+
+            <p class="text-muted">
+                {{ message }}
+            </p>
+
+            <a
+                href="{{ signup_url }}"
+                class="btn btn-primary"
+            >
+                Create account
+            </a>
+        </div>
+
+    {% elif action == "access_denied" %}
+
+        <div class="customer-access text-center">
+            <h2>Access denied</h2>
+
+            <p class="text-muted">
+                Your account is not authorized to access this customer.
+            </p>
+
+            <a
+                href="/"
+                class="btn btn-secondary"
+            >
+                Return to home
+            </a>
+        </div>
+
+    {% elif action == "identifier_required" %}
+
+        <div class="customer-access text-center">
+            <h2>Customer identification required</h2>
+
+            <p class="text-muted">
+                Please provide the email address or phone number
+                associated with the customer account.
+            </p>
+        </div>
+
+    {% elif action == "dashboard" %}
+
+        <div
+            id="customer-dashboard"
+            class="customer-dashboard"
+            data-customer="{{ customer_name }}"
+        >
+
+            <!-- Header -->
+            <section class="customer-welcome">
+
+                <div class="customer-avatar">
+                    {{ customer_account.customer_name[:1] | upper }}
+                </div>
+
+                <div class="customer-welcome-content">
+
+                    <p class="customer-eyebrow">
+                        CUSTOMER ACCOUNT
+                    </p>
+
+                    <h1>
+                        Welcome back, {{ customer_account.customer_name }}
+                    </h1>
+
+                    <p class="customer-subtitle">
+                        Manage your customer information, orders and
+                        delivery addresses.
+                    </p>
+
+                </div>
+
+                <div class="customer-status">
+
+                    <span
+                        class="status-dot status-dot-{{ customer_status.state }}"
+                    ></span>
+
+                    {{ customer_status.label }}
+
+                </div>
+
+            </section>
+
+
+            <!-- Quick summary -->
+            <section class="customer-summary">
+
+                {% if capabilities.view %}
+
+                    <a
+                        href="#customer-details"
+                        class="summary-item summary-item-clickable"
+                        data-account-action="customer-details"
+                    >
+
+                        <span class="summary-icon">
+                            <svg class="icon icon-md">
+                                <use href="#icon-user"></use>
+                            </svg>
+                        </span>
+
+                        <div>
+                            <small>Account</small>
+
+                            <strong>
+                                {{ customer_account.customer_name }}
+                            </strong>
+                        </div>
+
+                    </a>
+
+                {% endif %}
+
+
+                {% if customer_contact %}
+
+                    <a
+                        href="#customer-contacts"
+                        class="summary-item summary-item-clickable"
+                        data-account-action="customer-contacts"
+                    >
+
+                        <span class="summary-icon">
+                            <svg class="icon icon-md">
+                                <use href="#icon-mail"></use>
+                            </svg>
+                        </span>
+
+                        <div>
+                            <small>Contact</small>
+
+                            <strong>
+                                {{ customer_contact }}
+                            </strong>
+                        </div>
+
+                    </a>
+
+                {% endif %}
+
+
+                <div class="summary-item">
+
+                    <span class="summary-icon">
+                        <svg class="icon icon-md">
+                            <use href="#icon-shield"></use>
+                        </svg>
+                    </span>
+
+                    <div>
+                        <small>Access</small>
+
+                        <strong>
+                            {{ access_status.label }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Main account actions -->
+            <section class="customer-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="customer-eyebrow">
+                            YOUR ACCOUNT
+                        </p>
+
+                        <h2>
+                            What would you like to do?
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="customer-actions">
+
+                    <!-- Custom customer information -->
+                    {% if capabilities.view %}
+
+                        <a
+                            href="#customer-details"
+                            class="customer-card customer-card-primary"
+                            data-account-action="customer-details"
+                        >
+
+                            <div class="card-icon">
+
+                                <svg class="icon icon-md">
+                                    <use href="#icon-id-card"></use>
+                                </svg>
+
+                            </div>
+
+                            <div class="card-content">
+
+                                <h3>
+                                    Customer information
+                                </h3>
+
+                                <p>
+                                    View your customer details and
+                                    account information.
+                                </p>
+
+                            </div>
+
+                            <span class="card-arrow">
+
+                                <svg class="icon icon-md">
+                                    <use href="#icon-arrow-right"></use>
+                                </svg>
+
+                            </span>
+
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Custom customer editing -->
+                    {% if capabilities.edit_customer %}
+
+                        <a
+                            href="{{ profile_url | default('#profile', true) }}"
+                            class="customer-card"
+                            data-account-action="profile"
+                        >
+
+                            <div class="card-icon">
+
+                                <svg class="icon icon-md">
+                                    <use href="#icon-user"></use>
+                                </svg>
+
+                            </div>
+
+                            <div class="card-content">
+
+                                <h3>
+                                    Account information
+                                </h3>
+
+                                <p>
+                                    Update your personal and contact
+                                    information.
+                                </p>
+
+                            </div>
+
+                            <span class="card-arrow">
+
+                                <svg class="icon icon-md">
+                                    <use href="#icon-arrow-right"></use>
+                                </svg>
+
+                            </span>
+
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Standard Webshop orders -->
+                    {% if capabilities.view_orders %}
+
+                        <div class="dashboard-list-card">
+
+                            <div class="dashboard-list-header">
+
+                                <div>
+                                    <strong>Recent orders</strong>
+                                    <span>Your latest purchases and order history.</span>
+                                    </div>
+
+                                    <a
+                                        id="customer-dashboard-orders-more"
+                                        class="dashboard-list-more"
+                                        href="/orders"
+                                    >
+                                        View all
+                                    </a>
+
+                            </div>
+
+                            <div
+                                id="customer-dashboard-orders"
+                                class="dashboard-list"
+                            >
+                                <div class="dashboard-list-loading">
+                                    Loading orders...
+                                </div>
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+                    {% if capabilities.view_shipments %}
+                        <div class="dashboard-list-card">
+
+                            <div class="dashboard-list-header">
+
+                                <div>
+                                    <strong>Recent shipments</strong>
+                                    <span>Your latest deliveries and shipments.</span>
+                                </div>
+
+                                    <a
+                                        id="customer-dashboard-shipments-more"
+                                        class="dashboard-list-more"
+                                        href="/shipments"
+                                    >
+                                        View all
+                                    </a>
+
+                            </div>
+
+                            <div
+                                id="customer-dashboard-shipments"
+                                class="dashboard-list"
+                            >
+                                <div class="dashboard-list-loading">
+                                    Loading shipments...
+                                </div>
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                    <!-- Standard Webshop addresses -->
+                    {% if capabilities.manage_addresses %}
+
+                        <div class="dashboard-list-card">
+
+                            <div class="dashboard-list-header">
+
+                                <div>
+                                    <strong>Recent addresses</strong>
+                                    <span>Your saved delivery addresses.</span>
+                                </div>
+
+                                <a
+                                    id="customer-dashboard-addresses-more"
+                                    class="dashboard-list-more"
+                                    href="/address/list"
+                                >
+                                    View all
+                                </a>
+
+                            </div>
+
+                            <div
+                                id="customer-dashboard-addresses"
+                                class="dashboard-list"
+                            >
+                                <div class="dashboard-list-loading">
+                                    Loading addresses...
+                                </div>
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- Account status -->
+            <section class="customer-account-note">
+
+                <div class="account-note-icon">
+
+                    <svg class="icon icon-md">
+                        <use href="#icon-lock"></use>
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <h3>
+                        {{ customer_status.label }}
+                    </h3>
+
+                    <p>
+                        {{ customer_status.description }}
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+        <!-- Customer information dialog -->
+        <div
+            id="customer-profile-dialog"
+            class="customer-dialog"
+            aria-hidden="true"
+            hidden
+        >
+
+            <div
+                class="customer-dialog-backdrop"
+                data-dialog-close
+            ></div>
+
+            <div
+                class="customer-dialog-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="customer-profile-title"
+            >
+
+                <div class="customer-dialog-header">
+
+                    <div>
+                        <p class="customer-eyebrow">
+                            ACCOUNT INFORMATION
+                        </p>
+
+                        <h2 id="customer-profile-title">
+                            Update your information
+                        </h2>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="customer-dialog-close"
+                        data-dialog-close
+                        aria-label="Close"
+                    >
+                        <svg class="icon icon-md">
+                            <use href="#icon-close"></use>
+                        </svg>
+                    </button>
+
+                </div>
+
+
+                <form id="customer-profile-form">
+
+                    <div class="customer-form-grid">
+
+                        <div class="customer-form-field">
+
+                            <label for="customer-first-name">
+                                First name
+                            </label>
+
+                            <input
+                                id="customer-first-name"
+                                name="first_name"
+                                type="text"
+                                value="{{ customer_account.first_name or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="customer-form-field">
+
+                            <label for="customer-last-name">
+                                Last name
+                            </label>
+
+                            <input
+                                id="customer-last-name"
+                                name="last_name"
+                                type="text"
+                                value="{{ customer_account.last_name or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="customer-form-field customer-form-field-full">
+
+                            <label for="customer-name">
+                                Customer name
+                            </label>
+
+                            <input
+                                id="customer-name"
+                                name="customer_name"
+                                type="text"
+                                value="{{ customer_account.customer_name or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="customer-form-field">
+
+                            <label for="customer-email">
+                                Email address
+                            </label>
+
+                            <input
+                                id="customer-email"
+                                name="email_id"
+                                type="email"
+                                value="{{ customer_account.email or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="customer-form-field">
+
+                            <label for="customer-mobile">
+                                Mobile number
+                            </label>
+
+                            <input
+                                id="customer-mobile"
+                                name="mobile_no"
+                                type="tel"
+                                value="{{ customer_account.mobile or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="customer-form-field">
+
+                            <label for="customer-language">
+                                Language
+                            </label>
+
+                            <select
+                                id="customer-language"
+                                name="language"
+                            >
+                                <option
+                                    value="en"
+                                    {% if customer_account.language == "en" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    English
+                                </option>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="customer-dialog-footer">
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-dialog-close
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Save changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+        <!-- Customer details dialog -->
+        <div
+            id="customer-details-dialog"
+            class="customer-dialog"
+            aria-hidden="true"
+            hidden
+        >
+            <div
+                class="customer-dialog-backdrop"
+                data-details-close
+            ></div>
+
+            <div
+                class="customer-dialog-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="customer-details-title"
+            >
+
+                <div class="customer-dialog-header">
+
+                    <div>
+                        <p class="customer-eyebrow">
+                            CUSTOMER ACCOUNT
+                        </p>
+
+                        <h2 id="customer-details-title">
+                            Customer information
+                        </h2>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="customer-dialog-close"
+                        data-details-close
+                        aria-label="Close"
+                    >
+                        <svg class="icon icon-md">
+                            <use href="#icon-close"></use>
+                        </svg>
+                    </button>
+
+                </div>
+
+
+                <div class="customer-details-content">
+
+                    <div class="customer-details-section">
+
+                        <p class="customer-details-section-title">
+                            Account information
+                        </p>
+
+                        <div class="customer-details-grid">
+
+                            <div class="customer-detail">
+                                <span>Customer name</span>
+                                <strong>
+                                    {{ customer_account.customer_name or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Customer type</span>
+                                <strong>
+                                    {{ customer_account.customer_type or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Customer group</span>
+                                <strong>
+                                    {{ customer_account.customer_group or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Territory</span>
+                                <strong>
+                                    {{ customer_account.territory or "—" }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="customer-details-section">
+
+                        <p class="customer-details-section-title">
+                            Contact information
+                        </p>
+
+                        <div class="customer-details-grid">
+
+                            <div class="customer-detail">
+                                <span>First name</span>
+                                <strong>
+                                    {{ customer_account.first_name or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Last name</span>
+                                <strong>
+                                    {{ customer_account.last_name or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Email address</span>
+                                <strong>
+                                    {{ customer_account.email or "—" }}
+                                </strong>
+                            </div>
+
+                            <div class="customer-detail">
+                                <span>Mobile number</span>
+                                <strong>
+                                    {{ customer_account.mobile or "—" }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="customer-details-section">
+
+                        <p class="customer-details-section-title">
+                            Account status
+                        </p>
+
+                        <div class="customer-detail-status">
+
+                            <span
+                                class="status-dot status-dot-{{ customer_status.state }}"
+                            ></span>
+
+                            <div>
+                                <strong>
+                                    {{ customer_status.label }}
+                                </strong>
+
+                                <span>
+                                    {{ customer_status.description }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="customer-dialog-footer">
+
+                    {% if capabilities.edit_customer %}
+
+                        <a
+                            href="#profile"
+                            class="btn btn-primary"
+                            data-account-action="profile"
+                            data-details-close
+                        >
+                            Edit information
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+
+        <div
+            id="customer-contacts-dialog"
+            class="customer-dialog"
+            aria-hidden="true"
+            hidden
+        >
+
+            <div
+                class="customer-dialog-backdrop"
+                data-contacts-close
+            ></div>
+
+            <div
+                class="customer-dialog-panel customer-contacts-dialog-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="customer-contacts-title"
+            >
+
+                <div class="customer-dialog-header">
+
+                    <div>
+
+                        <p class="customer-eyebrow">
+                            CUSTOMER ACCOUNT
+                        </p>
+
+                        <h2 id="customer-contacts-title">
+                            Contacts
+                        </h2>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="customer-dialog-close"
+                        data-contacts-close
+                        aria-label="Close"
+                    >
+                        <svg class="icon icon-md">
+                            <use href="#icon-close"></use>
+                        </svg>
+                    </button>
+
+                </div>
+
+
+                <div class="customer-contacts-content">
+
+                    <div class="customer-contacts-header">
+
+                        <div>
+                            <h5>
+                                Contact information
+                            </h5>
+
+                            <p>
+                                Manage contacts associated with your
+                                customer account.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="add-customer-contact"
+                            data-add-customer-contact
+                        >
+                            Add contact
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="customer-contacts-list"
+                        class="customer-contacts-list"
+                    >
+
+                        <!-- Contacts will be rendered here -->
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div
+            id="add-customer-contact-dialog"
+            class="customer-dialog"
+            hidden
+        >
+            <div class="customer-dialog-backdrop"></div>
+
+            <div
+                class="customer-dialog-panel customer-add-contact-dialog-panel"
+            >
+
+                <div class="customer-dialog-header">
+
+                    <div>
+
+                        <span class="customer-dialog-eyebrow">
+                            CUSTOMER ACCOUNT
+                        </span>
+
+                        <h2 id="customer-contact-dialog-title">
+                            Add contact
+                        </h2>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="customer-dialog-close"
+                        data-close-add-contact
+                        aria-label="Close"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="customer-add-contact-content">
+
+                    <div class="customer-add-contact-intro">
+
+                        <h3>
+                            <span id="customer-contact-form-title">
+                                Contact information
+                            </span>
+                        </h3>
+
+                        <p id="customer-contact-form-description">
+                            Add a person associated with your customer account.
+                        </p>
+
+                    </div>
+
+
+                    <form id="add-customer-contact-form">
+
+                        <!--
+                            Empty when creating a contact.
+
+                            Contains the Contact name when editing
+                            an existing contact.
+                        -->
+                        <input
+                            type="hidden"
+                            name="contact_name"
+                            id="customer-contact-name"
+                        >
+
+
+                        <div class="customer-form-grid">
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-first-name">
+                                    First name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="contact-first-name"
+                                    name="first_name"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-middle-name">
+                                    Middle name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="contact-middle-name"
+                                    name="middle_name"
+                                >
+
+                            </div>
+
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-last-name">
+                                    Last name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="contact-last-name"
+                                    name="last_name"
+                                >
+
+                            </div>
+
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-email">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="contact-email"
+                                    name="email_id"
+                                >
+
+                            </div>
+
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-mobile">
+                                    Mobile number
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="contact-mobile"
+                                    name="mobile_no"
+                                >
+
+                            </div>
+
+
+                            <div class="customer-form-field">
+
+                                <label for="contact-phone">
+                                    Phone
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="contact-phone"
+                                    name="phone"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="customer-dialog-footer">
+
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-close-add-contact
+                            >
+                                Cancel
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                id="save-customer-contact"
+                            >
+                                Add contact
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    {% else %}
+
+        <div class="text-center">
+            <h2>Customer account</h2>
+
+            <p class="text-muted">
+                We could not determine how to continue.
+            </p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+{% if onboarding_token %}
+
+<script>
+    window.customerOnboardingToken = "{{ onboarding_token | e }}";
+</script>
+
+{% endif %}
+
+{% if onboarding_completed %}
+
+<script>
+    window.customerOnboardingCompleted = true;
+</script>
+
+{% endif %}
+
+{% endblock %}

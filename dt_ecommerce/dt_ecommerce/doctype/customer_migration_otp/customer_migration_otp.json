@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:verification_id",
+ "creation": "2026-10-02 13:23:56.559680",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "verification_id",
+  "customer",
+  "identifier_type",
+  "identifier_hash",
+  "channel",
+  "otp_hash",
+  "expires_at",
+  "attempts",
+  "maximum_attempts",
+  "verified",
+  "consumed"
+ ],
+ "fields": [
+  {
+   "fieldname": "verification_id",
+   "fieldtype": "Data",
+   "label": "Verification Id",
+   "unique": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "identifier_type",
+   "fieldtype": "Select",
+   "label": "Identifier Type",
+   "options": "Email\nMobile Number\nCustomer ID"
+  },
+  {
+   "fieldname": "identifier_hash",
+   "fieldtype": "Data",
+   "label": "Identifier Hash"
+  },
+  {
+   "fieldname": "channel",
+   "fieldtype": "Select",
+   "label": "Channel",
+   "options": "Email\nSMS"
+  },
+  {
+   "fieldname": "otp_hash",
+   "fieldtype": "Data",
+   "label": "OTP Hash"
+  },
+  {
+   "fieldname": "expires_at",
+   "fieldtype": "Datetime",
+   "label": "Expires at"
+  },
+  {
+   "fieldname": "attempts",
+   "fieldtype": "Int",
+   "label": "Attempts"
+  },
+  {
+   "fieldname": "maximum_attempts",
+   "fieldtype": "Int",
+   "label": "Maximum Attempts"
+  },
+  {
+   "default": "0",
+   "fieldname": "verified",
+   "fieldtype": "Check",
+   "label": "Verified"
+  },
+  {
+   "default": "0",
+   "fieldname": "consumed",
+   "fieldtype": "Check",
+   "label": "Consumed"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-02 13:35:20.722717",
+ "modified_by": "Administrator",
+ "module": "Dt Ecommerce",
+ "name": "Customer Migration OTP",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

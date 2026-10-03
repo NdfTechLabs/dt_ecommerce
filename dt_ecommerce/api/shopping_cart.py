@@ -1,5 +1,11 @@
 import frappe
+from webshop.webshop.shopping_cart.cart import (
+    get_party as original_get_party,
+)
 
+from dt_ecommerce.api.account_migration import (
+    get_migration_customer,
+)
 
 def ensure_utm_record(doctype, value):
     """
@@ -140,3 +146,11 @@ def create_lead_for_item_inquiry(lead, subject, message):
     )
 
     return lead_doc
+
+def get_party(user=None):
+    migration_customer = get_migration_customer()
+
+    if migration_customer:
+        return migration_customer
+
+    return original_get_party(user)
