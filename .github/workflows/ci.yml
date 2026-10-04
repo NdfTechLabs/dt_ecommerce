@@ -88,7 +88,6 @@ jobs:
       - name: Install
         working-directory: /home/runner/frappe-bench
         run: |
-          
     	  bench get-app --branch version-16 https://github.com/frappe/erpnext
     	  bench get-app --branch version-16 https://github.com/frappe/payments
     	  bench get-app --branch version-16 https://github.com/frappe/webshop
