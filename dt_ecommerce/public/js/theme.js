@@ -150,29 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 🔥 TRACK SEARCH CLICKS
       container.querySelectorAll('.dt-search-item').forEach(itemEl => {
-        const link = itemEl.closest('a');
-
-        if (!link) return;
-
-        link.addEventListener('click', (e) => {
-          const href = link.getAttribute('href');
-
-          // extract route → item_code (adjust if needed)
-          const item_code = link.dataset.itemCode;
-
-          const query = document.querySelector(".dt-search")?.value || null;
-
-          // fire and forget (don’t block navigation)
-          fetch('/api/method/dt_recomendations.api.log_search_click', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Frappe-CSRF-Token': frappe.csrf_token
-            },
-            body: JSON.stringify({ item_code, query }),
-            keepalive: true
-          });
-        });
+        window.trackSearchClick(itemEl);
       });
 
     }

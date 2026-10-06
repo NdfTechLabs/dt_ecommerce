@@ -1,1 +1,1 @@
-__version__ = "1.2.0" # fix: remove dalali code to its own app
+__version__ = "1.2.1" # fix: remove search tracking from catalog search form and sidebar form
